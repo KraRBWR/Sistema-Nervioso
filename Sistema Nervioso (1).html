@@ -1,0 +1,1046 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Sistema Nervioso</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout: lámina anatómica (escenario SVG a la izquierda, ficha de datos a la derecha), pestañas por escala: cuerpo, encéfalo, neurona, sinapsis, reflejo */
+:root{
+  --bg:#e8ebed; --panel:#f5f6f7; --ink:#182027; --ink2:#47535d; --line:#a9b3ba; --accent:#a3301d;
+  --stage:#d8dee2; --grid:#c4ccd2; --sel:#a3301d; --hover:#1d6f99;
+  --skin1:#d2c2b1; --skin2:#a38f7b; --bone:#e3dccb; --bone-line:#b6ab94;
+  --nerve:#a67f12; --nerve-hi:#d6aa2a; --cord:#ebe5d2;
+  --motor:#d2561a; --sens:#1b75a3;
+  --musc1:#b9564c; --musc2:#7b302d;
+  --lf:#cf8f88; --lp:#d0a95e; --lt:#86ae8f; --lo:#7f93b8; --lc:#b5754e; --lb:#a38a98;
+  --neu:#bf9467; --nuc:#7d4a56; --myelin:#f0e6c4;
+  --fire:#f08a2c; --fire2:#f6c453;
+  --f-ui:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --f-head:'IBM Plex Sans Condensed','Arial Narrow',system-ui,sans-serif;
+  --f-mono:'IBM Plex Mono',ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0e1216; --panel:#171d23; --ink:#e8ecef; --ink2:#a3aeb7; --line:#37424b; --accent:#ee7e63;
+  --stage:#0c1014; --grid:#182027; --sel:#ff9a52; --hover:#6cc4ec;
+  --skin1:#4b413b; --skin2:#2b2523; --bone:#6e665b; --bone-line:#4c463e;
+  --nerve:#e7d9a0; --nerve-hi:#fff2c0; --cord:#ddd7c2;
+  --motor:#ff8f45; --sens:#5cc0ea;
+  --musc1:#a5453e; --musc2:#5f2523;
+  --neu:#a97d52; --nuc:#8c5662; --myelin:#e9dfbd;
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0e1216; --panel:#171d23; --ink:#e8ecef; --ink2:#a3aeb7; --line:#37424b; --accent:#ee7e63;
+  --stage:#0c1014; --grid:#182027; --sel:#ff9a52; --hover:#6cc4ec;
+  --skin1:#4b413b; --skin2:#2b2523; --bone:#6e665b; --bone-line:#4c463e;
+  --nerve:#e7d9a0; --nerve-hi:#fff2c0; --cord:#ddd7c2;
+  --motor:#ff8f45; --sens:#5cc0ea;
+  --musc1:#a5453e; --musc2:#5f2523;
+  --neu:#a97d52; --nuc:#8c5662; --myelin:#e9dfbd;
+  color-scheme:dark}
+*{box-sizing:border-box}
+html,body{height:auto}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 var(--f-ui);
+  padding-block:14px 28px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:1280px;margin:0 auto;display:flex;flex-direction:column;gap:12px}
+button,select{font:inherit;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:0;padding:6px 11px;cursor:pointer}
+button:hover,select:hover{border-color:var(--ink)}
+button:focus-visible,select:focus-visible,a:focus-visible,.hs:focus-visible{outline:2px solid var(--hover);outline-offset:2px}
+.top{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;justify-content:space-between}
+h1{margin:0;font:700 27px/1 var(--f-head);letter-spacing:.06em;text-transform:uppercase;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.wm{font:500 11px/1 var(--f-mono);letter-spacing:.08em;color:var(--ink2);text-decoration:none;border:1px solid var(--line);padding:5px 7px;text-transform:none}
+.wm:hover{color:var(--ink);border-color:var(--ink)}
+.lang{display:flex;align-items:center;gap:8px;font:500 12px var(--f-mono);color:var(--ink2)}
+.tabs{display:flex;overflow-x:auto;border-bottom:2px solid var(--ink);scrollbar-width:thin}
+.tab{border:0;border-right:1px solid var(--line);background:transparent;font:600 14px var(--f-head);letter-spacing:.05em;text-transform:uppercase;padding:10px 16px;white-space:nowrap}
+.tab[aria-selected="true"]{background:var(--ink);color:var(--bg)}
+.grid{display:grid;grid-template-columns:minmax(0,1fr) 350px;gap:14px;align-items:start}
+.stage{position:relative;height:clamp(460px,calc(100vh - 150px),860px);border:1px solid var(--line);overflow:hidden;
+  background-color:var(--stage);
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:40px 40px;background-position:-1px -1px}
+#views{position:absolute;inset:0}
+.view{position:absolute;inset:0;opacity:0;visibility:hidden;transition:opacity .45s,visibility .45s}
+.view.on{opacity:1;visibility:visible}
+.view svg{width:100%;height:100%;display:block;touch-action:manipulation}
+.legend[hidden]{display:none}
+.zoomed .lab,.zoomed .bl{display:none}
+.legend{position:absolute;left:10px;top:10px;z-index:3;display:flex;flex-direction:column;gap:4px;font:500 11px var(--f-mono);color:var(--ink2);background:color-mix(in srgb,var(--stage) 82%,transparent);padding:6px 8px;border:1px solid var(--line);max-width:230px}
+.legend i{display:inline-block;width:9px;height:9px;margin-right:6px;vertical-align:-1px}
+.tools{position:absolute;left:10px;bottom:10px;z-index:3;display:flex;flex-wrap:wrap;gap:6px}
+.tools button{font:500 12px var(--f-mono);padding:6px 9px}
+.tools button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.tip{position:absolute;z-index:4;pointer-events:none;background:var(--ink);color:var(--bg);font:500 12px var(--f-mono);padding:4px 8px;white-space:nowrap}
+.panel{border:1px solid var(--line);background:var(--panel);padding:18px 18px 16px;position:sticky;top:8px;max-height:calc(100vh - 16px);overflow:auto}
+.panel .kick{font:500 11px var(--f-mono);letter-spacing:.09em;text-transform:uppercase;color:var(--accent)}
+.panel h2{margin:6px 0 10px;font:700 30px/1.05 var(--f-head);letter-spacing:.01em;padding-bottom:10px;border-bottom:3px double var(--ink)}
+.panel p{margin:0 0 12px}
+.panel ul{margin:0 0 14px;padding:0;list-style:none;display:flex;flex-direction:column;gap:7px}
+.panel li{padding-left:18px;position:relative}
+.panel li::before{content:"";position:absolute;left:2px;top:.62em;width:7px;height:1px;background:var(--ink)}
+.curio{border:1px dashed var(--ink2);padding:10px 12px;margin:0 0 14px;font-size:14px}
+.curio b{display:block;font:500 11px var(--f-mono);letter-spacing:.08em;text-transform:uppercase;margin-bottom:3px;color:var(--ink2)}
+.pnav{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+.prog{display:flex;flex-wrap:wrap;gap:3px;margin:14px 0 4px}
+.prog span{width:12px;height:12px;border:1px solid var(--ink2)}
+.prog span.v{background:var(--ink)}
+.prog span.c{outline:2px solid var(--sel);outline-offset:1px}
+.pcap{font:500 11px var(--f-mono);color:var(--ink2)}
+.steps{display:flex;flex-direction:column;gap:0;margin:0 0 12px;padding:0;list-style:none;border:1px solid var(--line)}
+.steps button{width:100%;text-align:left;border:0;border-bottom:1px solid var(--line);padding:8px 10px;display:flex;gap:10px;background:transparent}
+.steps li:last-child button{border-bottom:0}
+.steps button[aria-current="true"]{background:var(--ink);color:var(--bg)}
+.steps .sn{font:500 12px var(--f-mono);min-width:18px}
+.intro p{color:var(--ink2)}
+.quiz{border:1px solid var(--line);background:var(--panel);padding:24px;max-width:820px;margin:0 auto;width:100%}
+.quiz h2{margin:0 0 6px;font:700 28px/1.1 var(--f-head)}
+.qbar{display:flex;gap:4px;margin:12px 0 22px}
+.qbar span{flex:1;height:6px;background:var(--line)}
+.qbar span.ok{background:#2f8a4f}.qbar span.no{background:#b8362a}.qbar span.cur{background:var(--ink)}
+.qopts{display:flex;flex-direction:column;gap:8px;margin:16px 0}
+.qopts button{text-align:left;padding:11px 14px;font-size:15px}
+.qopts button.ok{border-color:#2f8a4f;background:color-mix(in srgb,#2f8a4f 20%,var(--panel));border-width:2px}
+.qopts button.no{border-color:#b8362a;background:color-mix(in srgb,#b8362a 18%,var(--panel));border-width:2px}
+.qexp{border:1px dashed var(--ink2);padding:10px 12px;margin-bottom:14px}
+.qscore{font:700 54px/1 var(--f-head);margin:8px 0}
+@keyframes dash{to{stroke-dashoffset:-20}}
+.hs{cursor:pointer;outline:none}
+.hs .hit{fill:none;stroke:transparent;stroke-width:18;pointer-events:stroke;stroke-linecap:round}
+.hs .hitf{fill:transparent;pointer-events:all}
+.hs .nv{fill:none;stroke:var(--nerve);stroke-linecap:round;stroke-linejoin:round;pointer-events:none;transition:stroke .2s}
+.hs:hover .nv,.hs:focus-visible .nv{stroke:var(--nerve-hi)}
+.hs.sel .nv{stroke:var(--sel)}
+.hs .sh{transition:stroke .2s,stroke-width .2s}
+.hs:hover .sh,.hs:focus-visible .sh{stroke:var(--hover);stroke-width:2}
+.hs.sel .sh{stroke:var(--sel);stroke-width:2.6;stroke-dasharray:7 4;animation:dash 1s linear infinite}
+.hs.sel .nv.ring{stroke-width:7;opacity:.25}
+.lab text{font:500 12.5px var(--f-mono);fill:var(--ink);cursor:pointer}
+.lab line,.lab polyline{stroke:var(--ink2);stroke-width:.7;fill:none}
+.lab circle{fill:var(--ink)}
+.lab.sel text{fill:var(--sel);font-weight:500}
+.lab.sel line,.lab.sel polyline{stroke:var(--sel);stroke-width:1.2}
+.lab.sel circle{fill:var(--sel)}
+.lab:hover text{fill:var(--hover)}
+.svgtxt{font:500 13px var(--f-mono);fill:var(--ink2)}
+@media (max-width:900px){
+  .grid{grid-template-columns:minmax(0,1fr)}
+  .stage{height:clamp(420px,66vh,640px)}
+  .panel{position:static;max-height:none}
+  h1{font-size:22px}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <h1><span id="ttl">Sistema nervioso</span></h1>
+  </header>
+  <nav class="tabs" id="tabs" role="tablist"></nav>
+  <main class="grid" id="main">
+    <section class="stage" id="stage">
+      <div class="legend" id="legend"></div>
+      <div id="views"></div>
+      <div class="tools" id="tools"></div>
+      <div class="tip" id="tip" hidden></div>
+    </section>
+    <aside class="panel" id="panel" aria-live="polite"></aside>
+  </main>
+  <section class="quiz" id="quiz" hidden></section>
+</div>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="gBody" x1="0" y1="0" x2="1" y2="0"><stop offset="0" style="stop-color:var(--skin1)"/><stop offset="1" style="stop-color:var(--skin2)"/></linearGradient>
+    <linearGradient id="gMusc" x1="0" y1="0" x2="1" y2="1"><stop offset="0" style="stop-color:var(--musc1)"/><stop offset="1" style="stop-color:var(--musc2)"/></linearGradient>
+    <linearGradient id="gCord" x1="0" y1="0" x2="1" y2="0"><stop offset="0" style="stop-color:var(--cord);stop-opacity:.55"/><stop offset=".5" style="stop-color:var(--cord)"/><stop offset="1" style="stop-color:var(--cord);stop-opacity:.55"/></linearGradient>
+    <linearGradient id="gMyel" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--myelin);stop-opacity:.7"/><stop offset=".38" style="stop-color:var(--myelin)"/><stop offset="1" style="stop-color:var(--myelin);stop-opacity:.55"/></linearGradient>
+    <radialGradient id="gSoma" cx=".38" cy=".35" r=".8"><stop offset="0" stop-color="#fff" stop-opacity=".45"/><stop offset=".45" style="stop-color:var(--neu)"/><stop offset="1" style="stop-color:var(--neu);stop-opacity:.8"/></radialGradient>
+    <radialGradient id="gNuc" cx=".4" cy=".35" r=".8"><stop offset="0" stop-color="#fff" stop-opacity=".3"/><stop offset=".6" style="stop-color:var(--nuc)"/><stop offset="1" style="stop-color:var(--nuc)"/></radialGradient>
+    <radialGradient id="gFlame" cx=".5" cy=".7" r=".6"><stop offset="0" stop-color="#fff6c8"/><stop offset=".45" stop-color="#f6b83a"/><stop offset="1" stop-color="#e2531a"/></radialGradient>
+    <filter id="tissue" x="-6%" y="-6%" width="112%" height="112%">
+      <feTurbulence type="fractalNoise" baseFrequency=".035" numOctaves="2" seed="4" result="n"/>
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="5" result="d"/>
+      <feGaussianBlur in="d" stdDeviation="3" result="b"/>
+      <feSpecularLighting in="b" surfaceScale="5" specularConstant=".75" specularExponent="22" lighting-color="#fff" result="s"><feDistantLight azimuth="235" elevation="52"/></feSpecularLighting>
+      <feComposite in="s" in2="d" operator="in" result="sp"/>
+      <feComposite in="d" in2="sp" operator="arithmetic" k1="0" k2="1" k3=".5" k4="0"/>
+    </filter>
+    <filter id="soft" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="2.4"/></filter>
+    <filter id="shadow" x="-20%" y="-10%" width="140%" height="130%"><feGaussianBlur stdDeviation="5"/></filter>
+  </defs>
+</svg>
+<script>
+'use strict';
+const I18N={};
+I18N.es={
+ui:{
+ ttl:'Sistema nervioso', lang:'Idioma',
+ tabs:{body:'Cuerpo',brain:'Encéfalo',neuron:'Neurona',syn:'Sinapsis',reflex:'Reflejo',quiz:'Desafío'},
+ motor:'Orden: del cerebro al músculo', sens:'Información: del cuerpo al cerebro',
+ reset:'Vista completa', labels:'Etiquetas', signals:'Señales', fire:'Disparar impulso', play:'Reproducir', stop:'Detener',
+ kindSel:'Elegido', fun:'¿Sabías que…?', explored:'Explorados', prev:'Anterior', next:'Siguiente', toBrain:'Ver el encéfalo por dentro', toNeuron:'Ver la neurona', toSyn:'Ver la sinapsis', toBody:'Volver al cuerpo',
+ introT:'Toca una parte',
+ intro:{
+  body:'Toca cualquier nervio, órgano o ganglio del cuerpo para ver su función. Los puntos de colores son impulsos nerviosos: los naranjas llevan órdenes y los azules traen información.',
+  brain:'Toca cada región del encéfalo para ver qué controla. Mira cómo se pliega la corteza para entrar en el cráneo.',
+  neuron:'Toca cada parte de la neurona. Con el botón puedes ver cómo viaja un impulso desde las dendritas hasta los botones terminales.',
+  syn:'Aquí se comunican dos neuronas. Toca cada estructura y usa el botón para ver cómo pasa el mensaje químico.',
+  reflex:'Un reflejo es una respuesta rápida que no espera al cerebro. Reproduce la animación o toca cada paso.'},
+ step:'Paso', qOf:'Pregunta', score:'Puntaje', again:'Repetir', ok:'¡Correcto!', no:'Incorrecto.', done:'Terminaste', nextQ:'Siguiente pregunta', finish:'Ver resultado',
+ rank:['Sigue explorando: vuelve a las láminas y prueba otra vez.','Buen trabajo, ya dominas lo básico.','Excelente, conoces muy bien el sistema nervioso.'],
+ quizT:'Desafío', quizSub:'7 preguntas para comprobar lo que aprendiste.'
+},
+items:{
+ encefalo:{n:'Encéfalo',k:'SNC · Órgano',d:'Es el centro de control del cuerpo. Recibe información de los sentidos, la interpreta y ordena respuestas. Está formado por el cerebro, el cerebelo y el tronco encefálico.',f:['Pesa cerca de 1,4 kg y tiene unos 86 000 millones de neuronas.','Lo protegen el cráneo, tres capas llamadas meninges y el líquido cefalorraquídeo.','Usa cerca del 20 % de la energía del cuerpo, aunque pesa solo el 2 %.'],c:'La superficie del cerebro está plegada: si se estirara, ocuparía unos 2 000 cm², como una pizarra chica.'},
+ ojos:{n:'Ojo y nervio óptico',k:'Receptor · Par craneal II',d:'Los fotorreceptores de la retina (conos y bastones) convierten la luz en impulsos nerviosos. El nervio óptico los lleva hasta el encéfalo.',f:['Los conos detectan el color y los bastones funcionan con poca luz.','La imagen se interpreta en el lóbulo occipital, en la parte de atrás de la cabeza.','Donde el nervio sale del ojo no hay fotorreceptores: es el punto ciego.'],c:'La imagen llega invertida a la retina y el cerebro la "da vuelta" sin que lo notes.'},
+ craneales:{n:'Nervios craneales',k:'SNP · 12 pares',d:'Son nervios que salen directamente del encéfalo, sin pasar por la médula. Controlan la cabeza y el cuello y algunos llegan más lejos.',f:['Hay 12 pares, numerados con números romanos (I al XII).','Algunos son sensitivos (olfato, vista), otros motores (mover los ojos) y otros mixtos.','El nervio facial mueve los músculos de la cara y el vestibulococlear lleva la audición y el equilibrio.'],c:'Para recordarlos, muchos estudiantes usan frases en las que cada palabra empieza como un nervio.'},
+ vago:{n:'Nervio vago',k:'SNP · Par craneal X · Mixto',d:'Es el nervio más largo de los craneales. Baja desde el tronco encefálico por el cuello hasta el tórax y el abdomen, y comunica al cerebro con los órganos internos.',f:['Baja la frecuencia del corazón y activa la digestión.','Forma parte del sistema parasimpático, el que nos calma.','"Vago" viene de "vagabundo": recorre mucho camino.'],c:'Respirar lento y profundo estimula el nervio vago y ayuda a relajarse.'},
+ medula:{n:'Médula espinal',k:'SNC · Cordón nervioso',d:'Es un cordón de unos 45 cm que baja por dentro de la columna vertebral. Lleva mensajes entre el encéfalo y el cuerpo y es el centro de los reflejos.',f:['Por dentro tiene sustancia gris (cuerpos de neuronas) con forma de mariposa; por fuera, sustancia blanca (axones).','Termina a la altura de las primeras vértebras lumbares; después sigue la "cola de caballo".','Las vértebras y las meninges la protegen.'],c:'Una lesión en la médula puede cortar la comunicación con las piernas o los brazos según su altura.'},
+ raquideos:{n:'Nervios raquídeos',k:'SNP · 31 pares · Mixtos',d:'Salen de la médula entre las vértebras. Cada uno se forma al unirse una raíz sensitiva (dorsal) con una raíz motora (ventral).',f:['Son 31 pares: 8 cervicales, 12 torácicos, 5 lumbares, 5 sacros y 1 coccígeo.','Por la raíz dorsal entra la información sensitiva; por la ventral salen las órdenes motoras.','Son mixtos: llevan los dos tipos de mensajes.'],c:'Los nervios cervicales controlan hasta el diafragma, el músculo principal de la respiración.'},
+ ganglios:{n:'Ganglios raquídeos',k:'SNP · Ganglio sensitivo',d:'Son pequeños abultamientos en la raíz dorsal de cada nervio raquídeo. Allí están los cuerpos de las neuronas sensitivas.',f:['Un ganglio es un grupo de cuerpos neuronales ubicado fuera del sistema nervioso central.','La información sensitiva pasa por ellos camino a la médula.','Cada ganglio atiende una zona de la piel y de los órganos.'],c:'Una infección con el virus de la varicela puede quedar escondida en estos ganglios durante años.'},
+ simpatica:{n:'Cadena simpática',k:'SNP · Sistema autónomo',d:'Son dos cadenas de ganglios a los lados de la columna. Forman el sistema simpático, que prepara al cuerpo para actuar rápido ("lucha o huida").',f:['Acelera el corazón y la respiración.','Dilata las pupilas y frena la digestión.','Actúa sin que lo decidas: es parte del sistema nervioso autónomo.'],c:'Cuando te asustas y "se te acelera el corazón", la cadena simpática está trabajando.'},
+ intercostales:{n:'Nervios intercostales',k:'SNP · Torácicos',d:'Pasan entre las costillas. Mueven los músculos que ayudan a respirar y dan sensibilidad al tórax y al abdomen.',f:['Salen de los nervios raquídeos torácicos.','Controlan los músculos intercostales que suben y bajan las costillas.','Llevan el tacto y el dolor de la pared del tórax.'],c:'El hipo ocurre por espasmos del diafragma, que controla otro nervio: el frénico.'},
+ braquial:{n:'Plexo braquial',k:'SNP · Red de nervios',d:'Es una red donde se mezclan las raíces de los nervios raquídeos cervicales y de la primera torácica. De ahí nacen los nervios del brazo.',f:['Se forma con 5 raíces (C5 a T1).','Pasa por el hombro, entre el cuello y la axila.','Una lesión grave puede paralizar el brazo.'],c:'Un tirón fuerte del hombro en un accidente puede dañar el plexo braquial.'},
+ radial:{n:'Nervio radial',k:'SNP · Mixto',d:'Recorre el lado externo del brazo hasta el dorso de la mano. Extiende el codo, la muñeca y los dedos.',f:['Mueve el tríceps, el músculo de atrás del brazo.','Da sensibilidad al dorso de la mano y al lado del pulgar.','Dormir con el brazo colgando de una silla puede comprimirlo y adormecer la mano.'],c:'Si se daña, la muñeca queda caída y cuesta levantar la mano.'},
+ mediano:{n:'Nervio mediano',k:'SNP · Mixto',d:'Baja por el centro del antebrazo y pasa por la muñeca hacia la palma. Flexiona los dedos y permite agarrar con precisión.',f:['Da sensibilidad a la palma, al pulgar y a los dedos índice y medio.','Pasa por el túnel del carpo, un espacio estrecho de la muñeca.','Si se comprime, aparece hormigueo: síndrome del túnel carpiano.'],c:'Usar mucho el teclado o el celular sin descanso puede irritarlo.'},
+ cubital:{n:'Nervio cubital',k:'SNP · Mixto',d:'Recorre el lado interno del brazo, pasa por detrás del codo y llega a los dedos meñique y anular. Mueve los músculos pequeños de la mano.',f:['Da sensibilidad al meñique y a la mitad del anular.','En el codo está muy superficial y casi sin protección.','Permite abrir y cerrar los dedos con fuerza.'],c:'El golpe en el "hueso de la risa" del codo en realidad golpea este nervio.'},
+ lumbosacro:{n:'Plexo lumbosacro',k:'SNP · Red de nervios',d:'Es una red de nervios en la zona de la cintura y la pelvis. De él salen los nervios de las piernas.',f:['Se forma con raíces de las vértebras lumbares y sacras.','Mueve la cadera, el muslo y la pierna.','Da sensibilidad a la parte inferior del cuerpo.'],c:'Es la red nerviosa más grande del cuerpo.'},
+ femoral:{n:'Nervio femoral',k:'SNP · Mixto',d:'Baja por la parte delantera del muslo. Estira la rodilla y da sensibilidad a la cara delantera e interna de la pierna.',f:['Mueve el cuádriceps, el músculo más grande del muslo.','Su rama final, el nervio safeno, llega hasta el tobillo.','Interviene en el reflejo rotuliano.'],c:'En el reflejo rotuliano, un golpecito en la rodilla hace saltar la pierna sin que lo decidas.'},
+ ciatico:{n:'Nervio ciático',k:'SNP · Mixto',d:'Es el nervio más largo y grueso del cuerpo. Va desde la pelvis por detrás del muslo y se divide en dos ramas sobre la rodilla: el tibial y el peroneo.',f:['Su grosor llega a ser como el de un dedo.','Controla los músculos de atrás del muslo, de la pierna y del pie.','La ciática es el dolor que aparece cuando se comprime.'],c:'Mide más de un metro, casi la longitud de la pierna.'},
+ piel:{n:'Receptores de la piel',k:'Receptores sensitivos',d:'Son terminaciones nerviosas que detectan el tacto, la presión, la temperatura y el dolor. Convierten el estímulo en un impulso nervioso.',f:['Las yemas de los dedos tienen muchísimos, por eso son tan sensibles.','Los receptores del dolor (nociceptores) nos avisan de un peligro.','La información viaja por neuronas sensitivas hasta la médula y el encéfalo.'],c:'Algunas zonas de la piel, como la espalda, tienen mucho menos receptores que los labios.'},
+ musculo:{n:'Músculo (efector)',k:'Efector',d:'Los músculos son efectores: reciben las órdenes de las neuronas motoras y responden contrayéndose.',f:['La neurona motora se conecta con la fibra muscular en la placa motora.','El neurotransmisor acetilcolina da la orden de contraer.','Los músculos esqueléticos se mueven por voluntad, salvo en los reflejos.'],c:'Una sola neurona motora puede controlar desde unas pocas fibras hasta miles.'},
+ frontal:{n:'Lóbulo frontal',k:'SNC · Cerebro',d:'Es la parte de adelante y la más grande del cerebro. Planifica, toma decisiones, controla el movimiento voluntario y el lenguaje hablado.',f:['La corteza motora, al final del lóbulo, ordena los movimientos.','Interviene en la personalidad, la atención y el autocontrol.','Termina de madurar recién cerca de los 25 años.'],c:'Es la región que más cambia durante la adolescencia.'},
+ parietal:{n:'Lóbulo parietal',k:'SNC · Cerebro',d:'Recibe e interpreta las sensaciones del cuerpo: tacto, presión, temperatura y dolor. También ayuda a orientarse en el espacio.',f:['La corteza sensitiva está justo detrás de la corteza motora.','Cada parte del cuerpo tiene su zona; manos y labios ocupan mucho espacio.','Permite saber dónde está tu mano aunque no la mires.'],c:'Gracias al lóbulo parietal puedes escribir en el teclado sin mirar.'},
+ temporal:{n:'Lóbulo temporal',k:'SNC · Cerebro',d:'Se ubica a los costados, cerca de las orejas. Procesa los sonidos, ayuda a comprender el lenguaje y participa en la memoria.',f:['La corteza auditiva interpreta lo que oímos.','Contiene el hipocampo, clave para formar recuerdos nuevos.','También interviene en el olfato y en las emociones.'],c:'Una canción puede devolverte un recuerdo entero gracias a esta zona.'},
+ occipital:{n:'Lóbulo occipital',k:'SNC · Cerebro',d:'Está en la parte de atrás de la cabeza. Es el centro de la visión: recibe lo que captan los ojos y arma la imagen.',f:['Recibe los impulsos del nervio óptico.','Reconoce formas, colores y movimiento.','Si se daña, puede perderse la vista aunque los ojos estén sanos.'],c:'Un golpe fuerte en la nuca a veces hace "ver estrellas".'},
+ cerebelo:{n:'Cerebelo',k:'SNC · Encéfalo',d:'Está debajo del cerebro, atrás. Coordina los movimientos, mantiene el equilibrio y hace que los gestos sean precisos y suaves.',f:['Su nombre significa "cerebro pequeño".','Tiene más de la mitad de las neuronas de todo el encéfalo.','Aprende movimientos automáticos, como andar en bicicleta.'],c:'Con el cerebelo dañado, tocarse la nariz con el dedo se vuelve difícil.'},
+ tronco:{n:'Tronco encefálico',k:'SNC · Encéfalo',d:'Une el cerebro con la médula espinal. Está formado por el mesencéfalo, la protuberancia y el bulbo raquídeo.',f:['Controla funciones vitales: respiración, latidos y presión.','Regula actos como tragar, toser y vomitar.','Por él pasan casi todos los nervios que suben y bajan.'],c:'No decides respirar mientras duermes: lo hace el bulbo por ti.'},
+ dendritas:{n:'Dendritas',k:'Neurona · Recepción',d:'Son prolongaciones cortas y muy ramificadas. Reciben los mensajes de otras neuronas y los llevan hacia el cuerpo celular.',f:['Su forma de árbol aumenta la superficie para recibir señales.','Una neurona puede recibir miles de contactos.','El nombre viene del griego "dendron", árbol.'],c:'Aprender cosas nuevas crea más ramificaciones y conexiones.'},
+ soma:{n:'Cuerpo celular (soma)',k:'Neurona · Integración',d:'Es la parte central de la neurona. Contiene el núcleo y los orgánulos que fabrican lo que la célula necesita, y suma las señales que llegan.',f:['Decide si se genera un impulso nervioso.','Contiene mitocondrias que dan energía.','Mide entre 4 y 100 micrómetros.'],c:'Los cuerpos celulares forman la sustancia gris.'},
+ nucleo:{n:'Núcleo',k:'Neurona · Control',d:'Guarda el ADN y dirige las actividades de la célula. Allí está la información para fabricar las proteínas que la neurona necesita.',f:['Tiene una zona oscura llamada nucléolo.','La mayoría de las neuronas casi no se dividen.','Por eso cuidar el cerebro es tan importante.'],c:'Cada neurona de tu cuerpo tiene el mismo ADN, pero usa genes distintos.'},
+ axon:{n:'Axón',k:'Neurona · Conducción',d:'Es una prolongación larga y fina que conduce el impulso eléctrico desde el cuerpo celular hasta otras células.',f:['Cada neurona tiene un solo axón, que se ramifica al final.','Puede medir más de un metro, como en las que van de la médula al pie.','El impulso viaja en una sola dirección.'],c:'Algunos axones de la jirafa miden varios metros.'},
+ mielina:{n:'Vaina de mielina',k:'Neurona · Aislante',d:'Es una cubierta de grasa y proteínas que envuelve al axón por tramos. Aísla el axón y hace que el impulso viaje mucho más rápido.',f:['La forman las células de Schwann en los nervios.','El impulso puede alcanzar 120 m/s, unos 430 km/h.','En la esclerosis múltiple se daña la mielina.'],c:'La mielina es blanquecina: por eso la "sustancia blanca" tiene ese color.'},
+ ranvier:{n:'Nodos de Ranvier',k:'Neurona · Conducción',d:'Son los pequeños espacios sin mielina entre un tramo y otro. En ellos se regenera el impulso, que "salta" de nodo en nodo.',f:['Este salto se llama conducción saltatoria.','Hace la transmisión más rápida y gasta menos energía.','Los separan unos 1 a 2 mm en axones grandes.'],c:'Reciben el nombre del médico francés Louis Ranvier, que los describió.'},
+ terminales:{n:'Botones terminales',k:'Neurona · Transmisión',d:'Son los extremos del axón. Allí el impulso eléctrico se convierte en una señal química que se libera hacia otra célula.',f:['Contienen vesículas con neurotransmisores.','Pueden conectar con otra neurona, un músculo o una glándula.','Cada neurona puede tener cientos de terminales.'],c:'El contacto entre un botón terminal y otra célula se llama sinapsis.'},
+ presin:{n:'Terminal presináptico',k:'Sinapsis · Neurona emisora',d:'Es el extremo del axón de la neurona que envía el mensaje. Cuando llega el impulso, libera neurotransmisores.',f:['Contiene mitocondrias que aportan energía.','El impulso abre canales y entra calcio (Ca²⁺).','El calcio hace que las vesículas se fusionen con la membrana.'],c:'Si no hay calcio, la sinapsis no funciona.'},
+ vesiculas:{n:'Vesículas sinápticas',k:'Sinapsis · Almacén',d:'Son bolsitas diminutas llenas de neurotransmisores. Esperan cerca de la membrana hasta que llega el impulso.',f:['Se fusionan con la membrana y vacían su contenido.','Ese proceso se llama exocitosis.','Después la célula recicla sus membranas.'],c:'Una terminal puede tener cientos de vesículas listas.'},
+ neurotrans:{n:'Neurotransmisores',k:'Sinapsis · Mensajeros',d:'Son sustancias químicas que llevan el mensaje de una neurona a la siguiente. Cada tipo produce efectos distintos.',f:['Ejemplos: acetilcolina, dopamina, serotonina y GABA.','Se eliminan enseguida: se recapturan o se destruyen.','Algunos medicamentos y drogas actúan sobre ellos.'],c:'La dopamina se relaciona con la motivación y el placer.'},
+ hendidura:{n:'Hendidura sináptica',k:'Sinapsis · Espacio',d:'Es el espacio diminuto entre dos neuronas. El impulso eléctrico no puede cruzarlo, así que pasa como señal química.',f:['Mide unos 20 a 40 nanómetros.','Un nanómetro es la millonésima parte de un milímetro.','Los neurotransmisores lo cruzan en milésimas de segundo.'],c:'Es mucho más estrecha que un cabello: unas 2 000 veces.'},
+ receptores:{n:'Receptores',k:'Sinapsis · Recepción',d:'Son proteínas en la membrana de la neurona receptora. Cada una encaja con un neurotransmisor, como una llave en una cerradura.',f:['Al unirse, abren canales para que entren iones.','Solo responden al neurotransmisor que les corresponde.','Su número cambia con el uso.'],c:'La cafeína bloquea receptores y por eso quita el sueño.'},
+ postsin:{n:'Neurona postsináptica',k:'Sinapsis · Neurona receptora',d:'Recibe el mensaje. Si la señal es suficiente, se genera un nuevo impulso nervioso y el mensaje sigue su camino.',f:['La sinapsis puede excitar o inhibir a la neurona.','La neurona suma todas las señales que recibe.','Así se transmite la información por las redes de neuronas.'],c:'Aprender fortalece las sinapsis que más usas.'},
+ estimulo:{n:'Estímulo',k:'Paso 1',d:'Algo del ambiente cambia: por ejemplo, tocas un objeto muy caliente.',f:[],c:'Un estímulo puede ser calor, frío, presión, luz o sonido.'},
+ receptor:{n:'Receptor',k:'Paso 2',d:'Los receptores de dolor de la piel detectan el peligro y transforman el estímulo en un impulso nervioso.',f:[],c:'Están a lo largo de toda la piel.'},
+ sensitiva:{n:'Neurona sensitiva',k:'Paso 3 · Vía aferente',d:'Lleva el impulso desde el receptor hasta la médula espinal. Entra por la raíz dorsal, pasando por el ganglio raquídeo.',f:[],c:'"Aferente" significa que lleva hacia el centro.'},
+ interneurona:{n:'Médula e interneurona',k:'Paso 4 · Centro integrador',d:'En la sustancia gris de la médula, la interneurona conecta la neurona sensitiva con la motora. La respuesta se decide acá, sin esperar al cerebro.',f:[],c:'Por eso el reflejo es tan rápido.'},
+ motora:{n:'Neurona motora',k:'Paso 5 · Vía eferente',d:'Lleva la orden desde la médula hasta el músculo. Sale por la raíz ventral del nervio raquídeo.',f:[],c:'"Eferente" significa que lleva hacia afuera.'},
+ efector:{n:'Efector',k:'Paso 6 · Respuesta',d:'El músculo se contrae y retiras la mano del peligro, todo en una fracción de segundo.',f:[],c:'Un reflejo es involuntario: ocurre sin que lo decidas.'},
+ cerebro:{n:'Cerebro',k:'Paso 7 · Después',d:'Mientras tanto, otra señal sube por la médula hasta el cerebro. Recién ahí sientes el dolor y te das cuenta de lo que pasó.',f:[],c:'Primero te proteges y después lo notas.'}
+},
+quiz:[
+ {q:'¿Cuál es la unidad básica del sistema nervioso?',o:['La nefrona','La neurona','El alvéolo','La fibra muscular'],a:1,e:'La neurona es la célula especializada en recibir y transmitir impulsos nerviosos.'},
+ {q:'¿Qué parte del encéfalo coordina el equilibrio y los movimientos?',o:['El cerebelo','El lóbulo occipital','El bulbo raquídeo','El hipotálamo'],a:0,e:'El cerebelo ajusta los movimientos y mantiene el equilibrio.'},
+ {q:'¿Qué estructura recubre al axón y acelera el impulso?',o:['El núcleo','Las dendritas','La vaina de mielina','Los ganglios'],a:2,e:'La mielina aísla el axón y permite que el impulso salte entre los nodos de Ranvier.'},
+ {q:'¿Cómo pasa el mensaje de una neurona a otra en la sinapsis?',o:['Con neurotransmisores','Con un cable eléctrico','Con la sangre','Con el aire'],a:0,e:'El impulso eléctrico se convierte en una señal química: los neurotransmisores cruzan la hendidura.'},
+ {q:'¿Qué neurona lleva información desde el receptor hacia la médula?',o:['Motora','Interneurona','Sensitiva (aferente)','Glial'],a:2,e:'La neurona sensitiva o aferente lleva la información hacia el sistema nervioso central.'},
+ {q:'¿Cuántos pares de nervios craneales existen?',o:['8','12','31','24'],a:1,e:'Son 12 pares que salen directamente del encéfalo.'},
+ {q:'¿Cuál es el nervio más largo y grueso del cuerpo?',o:['El ciático','El cubital','El mediano','El vago'],a:0,e:'El nervio ciático recorre la pierna desde la pelvis hasta el pie.'}
+]};
+I18N.en={
+ui:{
+ ttl:'Nervous system', lang:'Language',
+ tabs:{body:'Body',brain:'Brain',neuron:'Neuron',syn:'Synapse',reflex:'Reflex',quiz:'Challenge'},
+ motor:'Command: brain to muscle', sens:'Information: body to brain',
+ reset:'Full view', labels:'Labels', signals:'Signals', fire:'Fire impulse', play:'Play', stop:'Stop',
+ kindSel:'Selected', fun:'Did you know…?', explored:'Explored', prev:'Previous', next:'Next', toBrain:'See inside the brain', toNeuron:'See the neuron', toSyn:'See the synapse', toBody:'Back to the body',
+ introT:'Tap a part',
+ intro:{
+  body:'Tap any nerve, organ or ganglion on the body to see what it does. The colored dots are nerve impulses: orange ones carry commands and blue ones bring information.',
+  brain:'Tap each region of the brain to see what it controls. Notice how the cortex folds to fit inside the skull.',
+  neuron:'Tap each part of the neuron. Use the button to watch an impulse travel from the dendrites to the terminal buttons.',
+  syn:'This is where two neurons communicate. Tap each structure and use the button to see how the chemical message crosses.',
+  reflex:'A reflex is a fast response that does not wait for the brain. Play the animation or tap each step.'},
+ step:'Step', qOf:'Question', score:'Score', again:'Try again', ok:'Correct!', no:'Not quite.', done:'You finished', nextQ:'Next question', finish:'See result',
+ rank:['Keep exploring: go back to the plates and try again.','Good job, you know the basics.','Excellent, you know the nervous system very well.'],
+ quizT:'Challenge', quizSub:'7 questions to check what you learned.'
+},
+items:{
+ encefalo:{n:'Brain (encephalon)',k:'CNS · Organ',d:'It is the control center of the body. It receives information from the senses, interprets it and orders responses. It includes the cerebrum, the cerebellum and the brainstem.',f:['It weighs about 1.4 kg and has around 86 billion neurons.','The skull, three layers called meninges and cerebrospinal fluid protect it.','It uses about 20% of the body\'s energy while weighing only 2%.'],c:'The surface of the cerebrum is folded: stretched out, it would cover about 2,000 cm².'},
+ ojos:{n:'Eye and optic nerve',k:'Receptor · Cranial nerve II',d:'Photoreceptors in the retina (cones and rods) turn light into nerve impulses. The optic nerve carries them to the brain.',f:['Cones detect color and rods work in dim light.','The image is interpreted in the occipital lobe, at the back of the head.','Where the nerve leaves the eye there are no photoreceptors: the blind spot.'],c:'The image reaches the retina upside down and the brain flips it without you noticing.'},
+ craneales:{n:'Cranial nerves',k:'PNS · 12 pairs',d:'These nerves leave directly from the brain, without passing through the spinal cord. They control the head and neck, and some reach further.',f:['There are 12 pairs, numbered with Roman numerals (I to XII).','Some are sensory (smell, sight), some motor (moving the eyes) and some mixed.','The facial nerve moves the face muscles and the vestibulocochlear nerve carries hearing and balance.'],c:'Many students memorize them with phrases where each word starts like a nerve.'},
+ vago:{n:'Vagus nerve',k:'PNS · Cranial nerve X · Mixed',d:'It is the longest cranial nerve. It runs from the brainstem down the neck into the chest and abdomen, linking the brain to the internal organs.',f:['It slows the heart rate and activates digestion.','It is part of the parasympathetic system, the one that calms us.','"Vagus" means "wandering": it covers a lot of ground.'],c:'Slow, deep breathing stimulates the vagus nerve and helps you relax.'},
+ medula:{n:'Spinal cord',k:'CNS · Nerve cord',d:'A cord about 45 cm long inside the vertebral column. It carries messages between the brain and the body and is the center of reflexes.',f:['Inside it has gray matter (neuron cell bodies) shaped like a butterfly; outside, white matter (axons).','It ends near the first lumbar vertebrae; below that comes the "cauda equina" (horse\'s tail).','The vertebrae and the meninges protect it.'],c:'Damage to the spinal cord can cut communication with legs or arms depending on its level.'},
+ raquideos:{n:'Spinal nerves',k:'PNS · 31 pairs · Mixed',d:'They leave the spinal cord between the vertebrae. Each forms when a sensory (dorsal) root joins a motor (ventral) root.',f:['There are 31 pairs: 8 cervical, 12 thoracic, 5 lumbar, 5 sacral and 1 coccygeal.','Sensory information enters through the dorsal root; motor commands leave through the ventral one.','They are mixed: they carry both kinds of messages.'],c:'Cervical nerves even control the diaphragm, the main breathing muscle.'},
+ ganglios:{n:'Dorsal root ganglia',k:'PNS · Sensory ganglion',d:'Small swellings on the dorsal root of each spinal nerve. The cell bodies of the sensory neurons are there.',f:['A ganglion is a group of neuron cell bodies located outside the central nervous system.','Sensory information passes through them on its way to the spinal cord.','Each ganglion serves an area of skin and organs.'],c:'The chickenpox virus can hide in these ganglia for years.'},
+ simpatica:{n:'Sympathetic chain',k:'PNS · Autonomic system',d:'Two chains of ganglia beside the spine. They form the sympathetic system, which prepares the body to act fast ("fight or flight").',f:['It speeds up the heart and breathing.','It dilates the pupils and slows digestion.','It works without you deciding: it is part of the autonomic nervous system.'],c:'When you get scared and your heart races, the sympathetic chain is at work.'},
+ intercostales:{n:'Intercostal nerves',k:'PNS · Thoracic',d:'They run between the ribs. They move muscles that help breathing and give sensation to the chest and abdomen.',f:['They come from the thoracic spinal nerves.','They control the intercostal muscles that raise and lower the ribs.','They carry touch and pain from the chest wall.'],c:'Hiccups are spasms of the diaphragm, which is controlled by another nerve: the phrenic nerve.'},
+ braquial:{n:'Brachial plexus',k:'PNS · Nerve network',d:'A network where the roots of the cervical spinal nerves and the first thoracic one mix. The arm nerves are born from it.',f:['It is formed by 5 roots (C5 to T1).','It passes through the shoulder, between the neck and the armpit.','A serious injury can paralyze the arm.'],c:'A hard pull on the shoulder in an accident can damage the brachial plexus.'},
+ radial:{n:'Radial nerve',k:'PNS · Mixed',d:'It runs along the outer side of the arm to the back of the hand. It extends the elbow, wrist and fingers.',f:['It moves the triceps, the muscle at the back of the arm.','It gives sensation to the back of the hand and the thumb side.','Sleeping with your arm hanging over a chair can compress it and numb the hand.'],c:'If it is damaged, the wrist drops and lifting the hand is hard.'},
+ mediano:{n:'Median nerve',k:'PNS · Mixed',d:'It runs down the middle of the forearm and passes through the wrist into the palm. It bends the fingers and allows precise grip.',f:['It gives sensation to the palm, thumb, index and middle fingers.','It passes through the carpal tunnel, a narrow space in the wrist.','If compressed, it causes tingling: carpal tunnel syndrome.'],c:'Using a keyboard or phone for long periods without rest can irritate it.'},
+ cubital:{n:'Ulnar nerve',k:'PNS · Mixed',d:'It runs along the inner side of the arm, passes behind the elbow and reaches the little and ring fingers. It moves the small muscles of the hand.',f:['It gives sensation to the little finger and half of the ring finger.','At the elbow it is very superficial and barely protected.','It lets you open and close the fingers with strength.'],c:'Hitting your "funny bone" actually hits this nerve.'},
+ lumbosacro:{n:'Lumbosacral plexus',k:'PNS · Nerve network',d:'A network of nerves around the waist and pelvis. The nerves of the legs come out of it.',f:['It is formed by roots from the lumbar and sacral vertebrae.','It moves the hip, thigh and leg.','It gives sensation to the lower body.'],c:'It is the largest nerve network in the body.'},
+ femoral:{n:'Femoral nerve',k:'PNS · Mixed',d:'It runs down the front of the thigh. It straightens the knee and gives sensation to the front and inner side of the leg.',f:['It moves the quadriceps, the biggest muscle of the thigh.','Its final branch, the saphenous nerve, reaches the ankle.','It takes part in the knee-jerk reflex.','' ].filter(Boolean),c:'In the knee-jerk reflex, a tap on the knee makes your leg kick without you deciding.'},
+ ciatico:{n:'Sciatic nerve',k:'PNS · Mixed',d:'The longest and thickest nerve in the body. It runs from the pelvis down the back of the thigh and splits into two branches above the knee: the tibial and the peroneal.',f:['It can be as thick as a finger.','It controls the muscles at the back of the thigh, the leg and the foot.','Sciatica is the pain that appears when it is compressed.'],c:'It is over a meter long, almost the length of the leg.'},
+ piel:{n:'Skin receptors',k:'Sensory receptors',d:'Nerve endings that detect touch, pressure, temperature and pain. They turn the stimulus into a nerve impulse.',f:['Fingertips have a huge number of them, which is why they are so sensitive.','Pain receptors (nociceptors) warn us of danger.','The information travels along sensory neurons to the spinal cord and brain.'],c:'Some skin areas, like the back, have far fewer receptors than the lips.'},
+ musculo:{n:'Muscle (effector)',k:'Effector',d:'Muscles are effectors: they receive commands from motor neurons and respond by contracting.',f:['The motor neuron connects with the muscle fiber at the motor end plate.','The neurotransmitter acetylcholine gives the order to contract.','Skeletal muscles move at will, except during reflexes.'],c:'A single motor neuron can control from a few fibers to thousands.'},
+ frontal:{n:'Frontal lobe',k:'CNS · Cerebrum',d:'The front and biggest part of the cerebrum. It plans, makes decisions, controls voluntary movement and spoken language.',f:['The motor cortex, at the back of the lobe, orders movements.','It takes part in personality, attention and self-control.','It only finishes maturing around age 25.'],c:'It is the region that changes the most during adolescence.'},
+ parietal:{n:'Parietal lobe',k:'CNS · Cerebrum',d:'It receives and interprets body sensations: touch, pressure, temperature and pain. It also helps with orientation in space.',f:['The sensory cortex is right behind the motor cortex.','Each body part has its area; hands and lips take up a lot of space.','It lets you know where your hand is without looking.'],c:'Thanks to the parietal lobe you can type without looking at the keyboard.'},
+ temporal:{n:'Temporal lobe',k:'CNS · Cerebrum',d:'Located at the sides, near the ears. It processes sounds, helps understand language and takes part in memory.',f:['The auditory cortex interprets what we hear.','It contains the hippocampus, key for forming new memories.','It also takes part in smell and emotions.'],c:'A song can bring back a whole memory thanks to this area.'},
+ occipital:{n:'Occipital lobe',k:'CNS · Cerebrum',d:'At the back of the head. It is the vision center: it receives what the eyes capture and builds the image.',f:['It receives the impulses from the optic nerve.','It recognizes shapes, colors and movement.','If damaged, sight can be lost even with healthy eyes.'],c:'A hard blow to the back of the head sometimes makes you "see stars".'},
+ cerebelo:{n:'Cerebellum',k:'CNS · Brain',d:'Below the cerebrum, at the back. It coordinates movements, keeps balance and makes gestures precise and smooth.',f:['Its name means "little brain".','It has more than half of all the neurons in the brain.','It learns automatic movements, like riding a bike.'],c:'With a damaged cerebellum, touching your nose with a finger becomes difficult.'},
+ tronco:{n:'Brainstem',k:'CNS · Brain',d:'It joins the cerebrum to the spinal cord. It is formed by the midbrain, the pons and the medulla oblongata.',f:['It controls vital functions: breathing, heartbeat and blood pressure.','It regulates acts like swallowing, coughing and vomiting.','Almost all nerve pathways going up and down pass through it.'],c:'You do not decide to breathe while sleeping: the medulla does it for you.'},
+ dendritas:{n:'Dendrites',k:'Neuron · Reception',d:'Short, highly branched extensions. They receive messages from other neurons and carry them to the cell body.',f:['Their tree shape increases the surface for receiving signals.','A neuron can receive thousands of contacts.','The name comes from the Greek "dendron", tree.'],c:'Learning new things creates more branches and connections.'},
+ soma:{n:'Cell body (soma)',k:'Neuron · Integration',d:'The central part of the neuron. It holds the nucleus and the organelles that make what the cell needs, and it adds up the incoming signals.',f:['It decides whether a nerve impulse is generated.','It contains mitochondria that provide energy.','It measures between 4 and 100 micrometers.'],c:'The cell bodies make up the gray matter.'},
+ nucleo:{n:'Nucleus',k:'Neuron · Control',d:'It stores the DNA and directs the cell\'s activities. It holds the information to make the proteins the neuron needs.',f:['It has a dark area called the nucleolus.','Most neurons almost never divide.','That is why taking care of the brain is so important.'],c:'Every neuron in your body has the same DNA, but uses different genes.'},
+ axon:{n:'Axon',k:'Neuron · Conduction',d:'A long, thin extension that conducts the electrical impulse from the cell body to other cells.',f:['Each neuron has a single axon, which branches at the end.','It can be over a meter long, as in those from the spinal cord to the foot.','The impulse travels in one direction only.'],c:'Some axons in a giraffe are several meters long.'},
+ mielina:{n:'Myelin sheath',k:'Neuron · Insulation',d:'A cover of fat and proteins that wraps the axon in sections. It insulates the axon and makes the impulse travel much faster.',f:['Schwann cells form it in the nerves.','The impulse can reach 120 m/s, about 430 km/h.','In multiple sclerosis the myelin is damaged.'],c:'Myelin is whitish: that is why "white matter" has that color.'},
+ ranvier:{n:'Nodes of Ranvier',k:'Neuron · Conduction',d:'The small gaps without myelin between one section and the next. The impulse is renewed there and "jumps" from node to node.',f:['This jump is called saltatory conduction.','It makes transmission faster and uses less energy.','They are about 1 to 2 mm apart in large axons.'],c:'They are named after the French physician Louis Ranvier, who described them.'},
+ terminales:{n:'Terminal buttons',k:'Neuron · Transmission',d:'The ends of the axon. There the electrical impulse turns into a chemical signal released toward another cell.',f:['They contain vesicles with neurotransmitters.','They can connect with another neuron, a muscle or a gland.','Each neuron can have hundreds of terminals.'],c:'The contact between a terminal button and another cell is called a synapse.'},
+ presin:{n:'Presynaptic terminal',k:'Synapse · Sending neuron',d:'The end of the axon of the neuron that sends the message. When the impulse arrives, it releases neurotransmitters.',f:['It contains mitochondria that provide energy.','The impulse opens channels and calcium (Ca²⁺) enters.','Calcium makes the vesicles fuse with the membrane.'],c:'Without calcium, the synapse does not work.'},
+ vesiculas:{n:'Synaptic vesicles',k:'Synapse · Storage',d:'Tiny sacs full of neurotransmitters. They wait near the membrane until the impulse arrives.',f:['They fuse with the membrane and empty their contents.','This process is called exocytosis.','Afterwards the cell recycles their membranes.'],c:'One terminal can have hundreds of vesicles ready.'},
+ neurotrans:{n:'Neurotransmitters',k:'Synapse · Messengers',d:'Chemical substances that carry the message from one neuron to the next. Each type has different effects.',f:['Examples: acetylcholine, dopamine, serotonin and GABA.','They are removed quickly: recaptured or broken down.','Some medicines and drugs act on them.'],c:'Dopamine is related to motivation and pleasure.'},
+ hendidura:{n:'Synaptic cleft',k:'Synapse · Gap',d:'The tiny gap between two neurons. The electrical impulse cannot cross it, so it passes on as a chemical signal.',f:['It measures about 20 to 40 nanometers.','A nanometer is a millionth of a millimeter.','Neurotransmitters cross it in thousandths of a second.'],c:'It is about 2,000 times narrower than a hair.'},
+ receptores:{n:'Receptors',k:'Synapse · Reception',d:'Proteins in the membrane of the receiving neuron. Each one fits a neurotransmitter, like a key in a lock.',f:['When bound, they open channels so ions can enter.','They only respond to their matching neurotransmitter.','Their number changes with use.'],c:'Caffeine blocks receptors, which is why it keeps you awake.'},
+ postsin:{n:'Postsynaptic neuron',k:'Synapse · Receiving neuron',d:'It receives the message. If the signal is strong enough, a new nerve impulse is generated and the message goes on.',f:['A synapse can excite or inhibit the neuron.','The neuron adds up all the signals it receives.','This is how information travels through neuron networks.'],c:'Learning strengthens the synapses you use most.'},
+ estimulo:{n:'Stimulus',k:'Step 1',d:'Something in the environment changes: for example, you touch a very hot object.',f:[],c:'A stimulus can be heat, cold, pressure, light or sound.'},
+ receptor:{n:'Receptor',k:'Step 2',d:'Pain receptors in the skin detect the danger and turn the stimulus into a nerve impulse.',f:[],c:'They are spread all over the skin.'},
+ sensitiva:{n:'Sensory neuron',k:'Step 3 · Afferent pathway',d:'It carries the impulse from the receptor to the spinal cord. It enters through the dorsal root, passing the dorsal root ganglion.',f:[],c:'"Afferent" means carrying toward the center.'},
+ interneurona:{n:'Spinal cord and interneuron',k:'Step 4 · Integrating center',d:'In the gray matter of the spinal cord, the interneuron connects the sensory neuron to the motor one. The response is decided here, without waiting for the brain.',f:[],c:'That is why a reflex is so fast.'},
+ motora:{n:'Motor neuron',k:'Step 5 · Efferent pathway',d:'It carries the command from the spinal cord to the muscle. It leaves through the ventral root of the spinal nerve.',f:[],c:'"Efferent" means carrying outward.'},
+ efector:{n:'Effector',k:'Step 6 · Response',d:'The muscle contracts and you pull your hand away from danger, all in a fraction of a second.',f:[],c:'A reflex is involuntary: it happens without you deciding.'},
+ cerebro:{n:'Brain',k:'Step 7 · Afterwards',d:'Meanwhile, another signal climbs the spinal cord to the brain. Only then do you feel the pain and realize what happened.',f:[],c:'First you protect yourself, then you notice.'}
+},
+quiz:[
+ {q:'What is the basic unit of the nervous system?',o:['The nephron','The neuron','The alveolus','The muscle fiber'],a:1,e:'The neuron is the cell specialized in receiving and transmitting nerve impulses.'},
+ {q:'Which part of the brain coordinates balance and movements?',o:['The cerebellum','The occipital lobe','The medulla oblongata','The hypothalamus'],a:0,e:'The cerebellum fine-tunes movements and keeps balance.'},
+ {q:'Which structure covers the axon and speeds up the impulse?',o:['The nucleus','The dendrites','The myelin sheath','The ganglia'],a:2,e:'Myelin insulates the axon and lets the impulse jump between the nodes of Ranvier.'},
+ {q:'How does the message pass from one neuron to another at the synapse?',o:['With neurotransmitters','With an electric wire','With the blood','With the air'],a:0,e:'The electrical impulse becomes a chemical signal: neurotransmitters cross the cleft.'},
+ {q:'Which neuron carries information from the receptor to the spinal cord?',o:['Motor','Interneuron','Sensory (afferent)','Glial'],a:2,e:'The sensory or afferent neuron carries information toward the central nervous system.'},
+ {q:'How many pairs of cranial nerves are there?',o:['8','12','31','24'],a:1,e:'There are 12 pairs, leaving directly from the brain.'},
+ {q:'Which is the longest and thickest nerve in the body?',o:['The sciatic nerve','The ulnar nerve','The median nerve','The vagus nerve'],a:0,e:'The sciatic nerve runs through the leg from the pelvis to the foot.'}
+]};
+I18N.pt={
+ui:{
+ ttl:'Sistema nervoso', lang:'Idioma',
+ tabs:{body:'Corpo',brain:'Encéfalo',neuron:'Neurônio',syn:'Sinapse',reflex:'Reflexo',quiz:'Desafio'},
+ motor:'Ordem: do cérebro ao músculo', sens:'Informação: do corpo ao cérebro',
+ reset:'Vista completa', labels:'Legendas', signals:'Sinais', fire:'Disparar impulso', play:'Reproduzir', stop:'Parar',
+ kindSel:'Selecionado', fun:'Você sabia…?', explored:'Explorados', prev:'Anterior', next:'Próximo', toBrain:'Ver o encéfalo por dentro', toNeuron:'Ver o neurônio', toSyn:'Ver a sinapse', toBody:'Voltar ao corpo',
+ introT:'Toque numa parte',
+ intro:{
+  body:'Toque em qualquer nervo, órgão ou gânglio do corpo para ver sua função. Os pontos coloridos são impulsos nervosos: os laranjas levam ordens e os azuis trazem informação.',
+  brain:'Toque em cada região do encéfalo para ver o que ela controla. Veja como o córtex se dobra para caber no crânio.',
+  neuron:'Toque em cada parte do neurônio. Com o botão você vê um impulso viajar das dendritos até os botões terminais.',
+  syn:'Aqui dois neurônios se comunicam. Toque em cada estrutura e use o botão para ver como a mensagem química passa.',
+  reflex:'Um reflexo é uma resposta rápida que não espera o cérebro. Reproduza a animação ou toque em cada passo.'},
+ step:'Passo', qOf:'Pergunta', score:'Pontuação', again:'Repetir', ok:'Correto!', no:'Incorreto.', done:'Você terminou', nextQ:'Próxima pergunta', finish:'Ver resultado',
+ rank:['Continue explorando: volte às lâminas e tente de novo.','Bom trabalho, você domina o básico.','Excelente, você conhece muito bem o sistema nervoso.'],
+ quizT:'Desafio', quizSub:'7 perguntas para conferir o que você aprendeu.'
+},
+items:{
+ encefalo:{n:'Encéfalo',k:'SNC · Órgão',d:'É o centro de controle do corpo. Recebe informações dos sentidos, interpreta e ordena respostas. É formado pelo cérebro, o cerebelo e o tronco encefálico.',f:['Pesa cerca de 1,4 kg e tem uns 86 bilhões de neurônios.','Protegem-no o crânio, três camadas chamadas meninges e o líquido cefalorraquidiano.','Usa cerca de 20 % da energia do corpo, embora pese só 2 %.'],c:'A superfície do cérebro é dobrada: esticada, ocuparia uns 2 000 cm².'},
+ ojos:{n:'Olho e nervo óptico',k:'Receptor · Nervo craniano II',d:'Os fotorreceptores da retina (cones e bastonetes) transformam a luz em impulsos nervosos. O nervo óptico os leva ao encéfalo.',f:['Os cones detectam a cor e os bastonetes funcionam com pouca luz.','A imagem é interpretada no lobo occipital, atrás da cabeça.','Onde o nervo sai do olho não há fotorreceptores: é o ponto cego.'],c:'A imagem chega invertida à retina e o cérebro a "vira" sem você notar.'},
+ craneales:{n:'Nervos cranianos',k:'SNP · 12 pares',d:'São nervos que saem diretamente do encéfalo, sem passar pela medula. Controlam a cabeça e o pescoço e alguns vão mais longe.',f:['São 12 pares, numerados com algarismos romanos (I a XII).','Alguns são sensitivos (olfato, visão), outros motores (mover os olhos) e outros mistos.','O nervo facial move os músculos do rosto e o vestibulococlear leva a audição e o equilíbrio.'],c:'Muitos estudantes os memorizam com frases em que cada palavra começa como um nervo.'},
+ vago:{n:'Nervo vago',k:'SNP · Nervo craniano X · Misto',d:'É o nervo craniano mais longo. Desce do tronco encefálico pelo pescoço até o tórax e o abdome, ligando o cérebro aos órgãos internos.',f:['Diminui a frequência do coração e ativa a digestão.','Faz parte do sistema parassimpático, o que nos acalma.','"Vago" vem de "vagabundo": percorre muito caminho.'],c:'Respirar devagar e fundo estimula o nervo vago e ajuda a relaxar.'},
+ medula:{n:'Medula espinal',k:'SNC · Cordão nervoso',d:'É um cordão de uns 45 cm que desce dentro da coluna vertebral. Leva mensagens entre o encéfalo e o corpo e é o centro dos reflexos.',f:['Por dentro tem substância cinzenta (corpos de neurônios) em forma de borboleta; por fora, substância branca (axônios).','Termina na altura das primeiras vértebras lombares; depois segue a "cauda equina".','As vértebras e as meninges a protegem.'],c:'Uma lesão na medula pode cortar a comunicação com pernas ou braços, conforme a altura.'},
+ raquideos:{n:'Nervos espinais',k:'SNP · 31 pares · Mistos',d:'Saem da medula entre as vértebras. Cada um se forma quando uma raiz sensitiva (dorsal) se une a uma raiz motora (ventral).',f:['São 31 pares: 8 cervicais, 12 torácicos, 5 lombares, 5 sacrais e 1 coccígeo.','Pela raiz dorsal entra a informação sensitiva; pela ventral saem as ordens motoras.','São mistos: levam os dois tipos de mensagem.'],c:'Os nervos cervicais controlam até o diafragma, o principal músculo da respiração.'},
+ ganglios:{n:'Gânglios espinais',k:'SNP · Gânglio sensitivo',d:'São pequenos inchaços na raiz dorsal de cada nervo espinal. Ali estão os corpos dos neurônios sensitivos.',f:['Um gânglio é um grupo de corpos neuronais fora do sistema nervoso central.','A informação sensitiva passa por eles a caminho da medula.','Cada gânglio atende uma área da pele e dos órgãos.'],c:'O vírus da catapora pode ficar escondido nesses gânglios por anos.'},
+ simpatica:{n:'Cadeia simpática',k:'SNP · Sistema autônomo',d:'São duas cadeias de gânglios ao lado da coluna. Formam o sistema simpático, que prepara o corpo para agir rápido ("luta ou fuga").',f:['Acelera o coração e a respiração.','Dilata as pupilas e freia a digestão.','Age sem você decidir: faz parte do sistema nervoso autônomo.'],c:'Quando você se assusta e o coração dispara, a cadeia simpática está trabalhando.'},
+ intercostales:{n:'Nervos intercostais',k:'SNP · Torácicos',d:'Passam entre as costelas. Movem os músculos que ajudam a respirar e dão sensibilidade ao tórax e ao abdome.',f:['Saem dos nervos espinais torácicos.','Controlam os músculos intercostais que sobem e descem as costelas.','Levam o tato e a dor da parede do tórax.'],c:'O soluço ocorre por espasmos do diafragma, controlado por outro nervo: o frênico.'},
+ braquial:{n:'Plexo braquial',k:'SNP · Rede de nervos',d:'É uma rede onde se misturam as raízes dos nervos espinais cervicais e do primeiro torácico. Dali nascem os nervos do braço.',f:['Forma-se com 5 raízes (C5 a T1).','Passa pelo ombro, entre o pescoço e a axila.','Uma lesão grave pode paralisar o braço.'],c:'Um puxão forte no ombro num acidente pode danificar o plexo braquial.'},
+ radial:{n:'Nervo radial',k:'SNP · Misto',d:'Percorre o lado externo do braço até o dorso da mão. Estende o cotovelo, o punho e os dedos.',f:['Move o tríceps, o músculo de trás do braço.','Dá sensibilidade ao dorso da mão e ao lado do polegar.','Dormir com o braço pendurado numa cadeira pode comprimi-lo e adormecer a mão.'],c:'Se for lesado, o punho cai e fica difícil levantar a mão.'},
+ mediano:{n:'Nervo mediano',k:'SNP · Misto',d:'Desce pelo meio do antebraço e passa pelo punho até a palma. Flexiona os dedos e permite pegar com precisão.',f:['Dá sensibilidade à palma, ao polegar e aos dedos indicador e médio.','Passa pelo túnel do carpo, um espaço estreito do punho.','Se comprimido, causa formigamento: síndrome do túnel do carpo.'],c:'Usar muito o teclado ou o celular sem descanso pode irritá-lo.'},
+ cubital:{n:'Nervo ulnar',k:'SNP · Misto',d:'Percorre o lado interno do braço, passa atrás do cotovelo e chega aos dedos mínimo e anelar. Move os músculos pequenos da mão.',f:['Dá sensibilidade ao mínimo e à metade do anelar.','No cotovelo é muito superficial e quase sem proteção.','Permite abrir e fechar os dedos com força.'],c:'A batida no "osso da alegria" do cotovelo na verdade atinge esse nervo.'},
+ lumbosacro:{n:'Plexo lombossacral',k:'SNP · Rede de nervos',d:'É uma rede de nervos na região da cintura e da pelve. Dela saem os nervos das pernas.',f:['Forma-se com raízes das vértebras lombares e sacrais.','Move o quadril, a coxa e a perna.','Dá sensibilidade à parte inferior do corpo.'],c:'É a maior rede nervosa do corpo.'},
+ femoral:{n:'Nervo femoral',k:'SNP · Misto',d:'Desce pela frente da coxa. Estende o joelho e dá sensibilidade à face anterior e interna da perna.',f:['Move o quadríceps, o maior músculo da coxa.','Seu ramo final, o nervo safeno, chega ao tornozelo.','Participa do reflexo patelar.'],c:'No reflexo patelar, uma batidinha no joelho faz a perna pular sem você decidir.'},
+ ciatico:{n:'Nervo ciático',k:'SNP · Misto',d:'É o nervo mais longo e grosso do corpo. Vai da pelve por trás da coxa e se divide em dois ramos acima do joelho: o tibial e o fibular.',f:['Sua espessura chega a ser como a de um dedo.','Controla os músculos de trás da coxa, da perna e do pé.','A ciática é a dor que aparece quando é comprimido.'],c:'Mede mais de um metro, quase o comprimento da perna.'},
+ piel:{n:'Receptores da pele',k:'Receptores sensitivos',d:'São terminações nervosas que detectam tato, pressão, temperatura e dor. Transformam o estímulo em impulso nervoso.',f:['As pontas dos dedos têm muitíssimos, por isso são tão sensíveis.','Os receptores de dor (nociceptores) nos avisam do perigo.','A informação viaja por neurônios sensitivos até a medula e o encéfalo.'],c:'Algumas áreas da pele, como as costas, têm bem menos receptores que os lábios.'},
+ musculo:{n:'Músculo (efetor)',k:'Efetor',d:'Os músculos são efetores: recebem as ordens dos neurônios motores e respondem contraindo-se.',f:['O neurônio motor se liga à fibra muscular na placa motora.','O neurotransmissor acetilcolina dá a ordem de contrair.','Os músculos esqueléticos se movem por vontade, exceto nos reflexos.'],c:'Um único neurônio motor pode controlar de poucas fibras até milhares.'},
+ frontal:{n:'Lobo frontal',k:'SNC · Cérebro',d:'É a parte da frente e a maior do cérebro. Planeja, toma decisões, controla o movimento voluntário e a linguagem falada.',f:['O córtex motor, no fim do lobo, ordena os movimentos.','Participa da personalidade, da atenção e do autocontrole.','Só termina de amadurecer perto dos 25 anos.'],c:'É a região que mais muda durante a adolescência.'},
+ parietal:{n:'Lobo parietal',k:'SNC · Cérebro',d:'Recebe e interpreta as sensações do corpo: tato, pressão, temperatura e dor. Também ajuda a se orientar no espaço.',f:['O córtex sensitivo fica logo atrás do córtex motor.','Cada parte do corpo tem sua zona; mãos e lábios ocupam muito espaço.','Permite saber onde está sua mão sem olhar.'],c:'Graças ao lobo parietal você digita sem olhar para o teclado.'},
+ temporal:{n:'Lobo temporal',k:'SNC · Cérebro',d:'Fica nas laterais, perto das orelhas. Processa os sons, ajuda a compreender a linguagem e participa da memória.',f:['O córtex auditivo interpreta o que ouvimos.','Contém o hipocampo, essencial para formar lembranças novas.','Também participa do olfato e das emoções.'],c:'Uma canção pode trazer de volta uma lembrança inteira graças a essa área.'},
+ occipital:{n:'Lobo occipital',k:'SNC · Cérebro',d:'Fica atrás da cabeça. É o centro da visão: recebe o que os olhos captam e monta a imagem.',f:['Recebe os impulsos do nervo óptico.','Reconhece formas, cores e movimento.','Se for lesado, pode-se perder a visão mesmo com olhos saudáveis.'],c:'Uma pancada forte na nuca às vezes faz "ver estrelas".'},
+ cerebelo:{n:'Cerebelo',k:'SNC · Encéfalo',d:'Fica embaixo do cérebro, atrás. Coordena os movimentos, mantém o equilíbrio e deixa os gestos precisos e suaves.',f:['Seu nome significa "pequeno cérebro".','Tem mais da metade dos neurônios de todo o encéfalo.','Aprende movimentos automáticos, como andar de bicicleta.'],c:'Com o cerebelo lesado, tocar o nariz com o dedo fica difícil.'},
+ tronco:{n:'Tronco encefálico',k:'SNC · Encéfalo',d:'Une o cérebro à medula espinal. É formado pelo mesencéfalo, a ponte e o bulbo.',f:['Controla funções vitais: respiração, batimentos e pressão.','Regula atos como engolir, tossir e vomitar.','Por ele passam quase todos os nervos que sobem e descem.'],c:'Você não decide respirar enquanto dorme: o bulbo faz isso por você.'},
+ dendritas:{n:'Dendritos',k:'Neurônio · Recepção',d:'São prolongamentos curtos e muito ramificados. Recebem as mensagens de outros neurônios e as levam ao corpo celular.',f:['Sua forma de árvore aumenta a superfície para receber sinais.','Um neurônio pode receber milhares de contatos.','O nome vem do grego "dendron", árvore.'],c:'Aprender coisas novas cria mais ramificações e conexões.'},
+ soma:{n:'Corpo celular (soma)',k:'Neurônio · Integração',d:'É a parte central do neurônio. Contém o núcleo e as organelas que fabricam o que a célula precisa e soma os sinais que chegam.',f:['Decide se um impulso nervoso é gerado.','Contém mitocôndrias que dão energia.','Mede entre 4 e 100 micrômetros.'],c:'Os corpos celulares formam a substância cinzenta.'},
+ nucleo:{n:'Núcleo',k:'Neurônio · Controle',d:'Guarda o DNA e dirige as atividades da célula. Ali está a informação para fabricar as proteínas de que o neurônio precisa.',f:['Tem uma zona escura chamada nucléolo.','A maioria dos neurônios quase não se divide.','Por isso cuidar do cérebro é tão importante.'],c:'Cada neurônio do seu corpo tem o mesmo DNA, mas usa genes diferentes.'},
+ axon:{n:'Axônio',k:'Neurônio · Condução',d:'É um prolongamento longo e fino que conduz o impulso elétrico do corpo celular até outras células.',f:['Cada neurônio tem um só axônio, que se ramifica no final.','Pode medir mais de um metro, como nos que vão da medula ao pé.','O impulso viaja em uma só direção.'],c:'Alguns axônios da girafa medem vários metros.'},
+ mielina:{n:'Bainha de mielina',k:'Neurônio · Isolante',d:'É uma cobertura de gordura e proteínas que envolve o axônio por trechos. Isola o axônio e faz o impulso viajar muito mais rápido.',f:['As células de Schwann a formam nos nervos.','O impulso pode chegar a 120 m/s, uns 430 km/h.','Na esclerose múltipla a mielina é danificada.'],c:'A mielina é esbranquiçada: por isso a "substância branca" tem essa cor.'},
+ ranvier:{n:'Nós de Ranvier',k:'Neurônio · Condução',d:'São os pequenos espaços sem mielina entre um trecho e outro. Neles o impulso se regenera e "salta" de nó em nó.',f:['Esse salto se chama condução saltatória.','Torna a transmissão mais rápida e gasta menos energia.','Ficam separados por 1 a 2 mm em axônios grandes.'],c:'Têm o nome do médico francês Louis Ranvier, que os descreveu.'},
+ terminales:{n:'Botões terminais',k:'Neurônio · Transmissão',d:'São as extremidades do axônio. Ali o impulso elétrico vira um sinal químico liberado para outra célula.',f:['Contêm vesículas com neurotransmissores.','Podem se conectar a outro neurônio, um músculo ou uma glândula.','Cada neurônio pode ter centenas de terminais.'],c:'O contato entre um botão terminal e outra célula se chama sinapse.'},
+ presin:{n:'Terminal pré-sináptico',k:'Sinapse · Neurônio emissor',d:'É a extremidade do axônio do neurônio que envia a mensagem. Quando o impulso chega, libera neurotransmissores.',f:['Contém mitocôndrias que fornecem energia.','O impulso abre canais e entra cálcio (Ca²⁺).','O cálcio faz as vesículas se fundirem com a membrana.'],c:'Sem cálcio, a sinapse não funciona.'},
+ vesiculas:{n:'Vesículas sinápticas',k:'Sinapse · Armazém',d:'São bolsinhas minúsculas cheias de neurotransmissores. Esperam perto da membrana até o impulso chegar.',f:['Fundem-se com a membrana e esvaziam o conteúdo.','Esse processo se chama exocitose.','Depois a célula recicla suas membranas.'],c:'Um terminal pode ter centenas de vesículas prontas.'},
+ neurotrans:{n:'Neurotransmissores',k:'Sinapse · Mensageiros',d:'São substâncias químicas que levam a mensagem de um neurônio ao seguinte. Cada tipo produz efeitos diferentes.',f:['Exemplos: acetilcolina, dopamina, serotonina e GABA.','São eliminados logo: recapturados ou destruídos.','Alguns remédios e drogas agem sobre eles.'],c:'A dopamina está relacionada à motivação e ao prazer.'},
+ hendidura:{n:'Fenda sináptica',k:'Sinapse · Espaço',d:'É o espaço minúsculo entre dois neurônios. O impulso elétrico não consegue atravessá-lo, então passa como sinal químico.',f:['Mede uns 20 a 40 nanômetros.','Um nanômetro é a milionésima parte de um milímetro.','Os neurotransmissores a cruzam em milésimos de segundo.'],c:'É cerca de 2 000 vezes mais estreita que um fio de cabelo.'},
+ receptores:{n:'Receptores',k:'Sinapse · Recepção',d:'São proteínas na membrana do neurônio receptor. Cada uma se encaixa em um neurotransmissor, como uma chave numa fechadura.',f:['Ao se ligar, abrem canais para a entrada de íons.','Só respondem ao neurotransmissor correspondente.','Seu número muda com o uso.'],c:'A cafeína bloqueia receptores e por isso tira o sono.'},
+ postsin:{n:'Neurônio pós-sináptico',k:'Sinapse · Neurônio receptor',d:'Recebe a mensagem. Se o sinal for suficiente, gera-se um novo impulso nervoso e a mensagem segue seu caminho.',f:['A sinapse pode excitar ou inibir o neurônio.','O neurônio soma todos os sinais que recebe.','Assim a informação viaja pelas redes de neurônios.'],c:'Aprender fortalece as sinapses que você mais usa.'},
+ estimulo:{n:'Estímulo',k:'Passo 1',d:'Algo no ambiente muda: por exemplo, você toca num objeto muito quente.',f:[],c:'Um estímulo pode ser calor, frio, pressão, luz ou som.'},
+ receptor:{n:'Receptor',k:'Passo 2',d:'Os receptores de dor da pele detectam o perigo e transformam o estímulo em impulso nervoso.',f:[],c:'Estão espalhados por toda a pele.'},
+ sensitiva:{n:'Neurônio sensitivo',k:'Passo 3 · Via aferente',d:'Leva o impulso do receptor até a medula espinal. Entra pela raiz dorsal, passando pelo gânglio espinal.',f:[],c:'"Aferente" significa que leva em direção ao centro.'},
+ interneurona:{n:'Medula e interneurônio',k:'Passo 4 · Centro integrador',d:'Na substância cinzenta da medula, o interneurônio liga o neurônio sensitivo ao motor. A resposta é decidida aqui, sem esperar o cérebro.',f:[],c:'Por isso o reflexo é tão rápido.'},
+ motora:{n:'Neurônio motor',k:'Passo 5 · Via eferente',d:'Leva a ordem da medula até o músculo. Sai pela raiz ventral do nervo espinal.',f:[],c:'"Eferente" significa que leva para fora.'},
+ efector:{n:'Efetor',k:'Passo 6 · Resposta',d:'O músculo se contrai e você afasta a mão do perigo, tudo em uma fração de segundo.',f:[],c:'Um reflexo é involuntário: acontece sem você decidir.'},
+ cerebro:{n:'Cérebro',k:'Passo 7 · Depois',d:'Enquanto isso, outro sinal sobe pela medula até o cérebro. Só então você sente a dor e percebe o que aconteceu.',f:[],c:'Primeiro você se protege, depois percebe.'}
+},
+quiz:[
+ {q:'Qual é a unidade básica do sistema nervoso?',o:['O néfron','O neurônio','O alvéolo','A fibra muscular'],a:1,e:'O neurônio é a célula especializada em receber e transmitir impulsos nervosos.'},
+ {q:'Que parte do encéfalo coordena o equilíbrio e os movimentos?',o:['O cerebelo','O lobo occipital','O bulbo','O hipotálamo'],a:0,e:'O cerebelo ajusta os movimentos e mantém o equilíbrio.'},
+ {q:'Que estrutura reveste o axônio e acelera o impulso?',o:['O núcleo','Os dendritos','A bainha de mielina','Os gânglios'],a:2,e:'A mielina isola o axônio e permite que o impulso salte entre os nós de Ranvier.'},
+ {q:'Como a mensagem passa de um neurônio a outro na sinapse?',o:['Com neurotransmissores','Com um fio elétrico','Com o sangue','Com o ar'],a:0,e:'O impulso elétrico vira um sinal químico: os neurotransmissores cruzam a fenda.'},
+ {q:'Que neurônio leva informação do receptor até a medula?',o:['Motor','Interneurônio','Sensitivo (aferente)','Glial'],a:2,e:'O neurônio sensitivo ou aferente leva a informação ao sistema nervoso central.'},
+ {q:'Quantos pares de nervos cranianos existem?',o:['8','12','31','24'],a:1,e:'São 12 pares que saem diretamente do encéfalo.'},
+ {q:'Qual é o nervo mais longo e grosso do corpo?',o:['O ciático','O ulnar','O mediano','O vago'],a:0,e:'O nervo ciático percorre a perna da pelve até o pé.'}
+]};
+
+/* ---------- utilidades ---------- */
+const NS='http://www.w3.org/2000/svg';
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const REDUCED=matchMedia('(prefers-reduced-motion: reduce)').matches;
+function el(tag,attrs,parent){const e=document.createElementNS(NS,tag);for(const k in (attrs||{}))e.setAttribute(k,attrs[k]);if(parent)parent.appendChild(e);return e}
+function h(tag,attrs,txt){const e=document.createElement(tag);for(const k in (attrs||{}))e.setAttribute(k,attrs[k]);if(txt!=null)e.textContent=txt;return e}
+const rng=seed=>()=>{seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296};
+function smooth(pts){let d='M'+pts[0][0].toFixed(1)+','+pts[0][1].toFixed(1);
+  for(let i=0;i<pts.length-1;i++){const p0=pts[i-1]||pts[i],p1=pts[i],p2=pts[i+1],p3=pts[i+2]||p2;
+    const a=[p1[0]+(p2[0]-p0[0])/6,p1[1]+(p2[1]-p0[1])/6],b=[p2[0]-(p3[0]-p1[0])/6,p2[1]-(p3[1]-p1[1])/6];
+    d+='C'+a[0].toFixed(1)+','+a[1].toFixed(1)+' '+b[0].toFixed(1)+','+b[1].toFixed(1)+' '+p2[0].toFixed(1)+','+p2[1].toFixed(1)}
+  return d}
+const ease=k=>k<.5?4*k*k*k:1-Math.pow(-2*k+2,3)/2;
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+
+/* ---------- idioma ---------- */
+let LANG='es';
+
+const T=()=>I18N[LANG];
+const IT=id=>T().items[id]||{n:id,k:'',d:'',f:[],c:''};
+
+/* ---------- cámara SVG ---------- */
+class Cam{
+  constructor(svg,base){this.svg=svg;this.base=base;this.target=base;this.raf=0;this.cur=this.fit(base);this.apply(this.cur)}
+  aspect(){const s=$('#stage');return Math.max(.3,s.clientWidth/Math.max(1,s.clientHeight))}
+  fit(b){let [x,y,w,hh]=b;const a=this.aspect();if(w/hh<a){const nw=hh*a;x-=(nw-w)/2;w=nw}else{const nh=w/a;y-=(nh-hh)/2;hh=nh}return[x,y,w,hh]}
+  apply(v){this.cur=v;this.svg.setAttribute('viewBox',v.map(n=>n.toFixed(2)).join(' '))}
+  go(b,ms=850,instant){this.target=b;const to=this.fit(b);cancelAnimationFrame(this.raf);
+    if(instant||REDUCED){this.apply(to);return}
+    const from=this.cur.slice(),t0=performance.now();
+    const step=now=>{const k=Math.min(1,(now-t0)/ms),e=ease(k);this.apply(from.map((v,i)=>v+(to[i]-v)*e));if(k<1)this.raf=requestAnimationFrame(step)};
+    this.raf=requestAnimationFrame(step)}
+  refit(){this.go(this.target,0,true)}
+  home(){this.go(this.base)}
+}
+function boxOf(node,pad,minSize){const b=node.getBBox();let w=b.width+pad*2,hh=b.height+pad*2;
+  const m=minSize||0;if(w<m)w=m;if(hh<m)hh=m;
+  return[b.x+b.width/2-w/2,b.y+b.height/2-hh/2,w,hh]}
+
+/* ---------- estado y vistas ---------- */
+const V={},S={};let view='body';
+const views=$('#views');
+const L={body:{encefalo:'brain'},brain:{_:'body'},neuron:{terminales:'syn'},syn:{presin:'neuron'}};
+const LK={brain:'toBrain',body:'toBody',syn:'toSyn',neuron:'toNeuron'};
+function registerView(key,def){const d=h('div',{class:'view','data-v':key});views.appendChild(d);
+  def.root=d;V[key]=def;S[key]={sel:null,vis:new Set()};return d}
+
+/* ---------- ticker global ---------- */
+const tickers=new Set();
+(function loop(t){if(!document.hidden)tickers.forEach(f=>f(t));requestAnimationFrame(loop)})(0);
+
+/* ---------- panel ---------- */
+function renderPanel(){
+  const t=T(),vk=view,def=V[vk],st=S[vk],p=$('#panel');if(!def)return;
+  const ids=def.ids||[];let html='';
+  if(!st.sel){
+    html+=`<div class="intro"><div class="kick">${t.ui.introT}</div><h2>${t.ui.tabs[vk]}</h2><p>${t.ui.intro[vk]}</p></div>`;
+  }else{
+    const it=IT(st.sel);
+    html+=`<div class="kick">${it.k}</div><h2>${it.n}</h2><p>${it.d}</p>`;
+    if(it.f&&it.f.length)html+='<ul>'+it.f.map(f=>`<li>${f}</li>`).join('')+'</ul>';
+    if(it.c)html+=`<div class="curio"><b>${t.ui.fun}</b>${it.c}</div>`;
+  }
+  p.innerHTML=html;
+  if(def.panelExtra){const x=def.panelExtra();if(x)p.appendChild(x)}
+  const nav=h('div',{class:'pnav'});
+  const idx=ids.indexOf(st.sel);
+  if(ids.length&&!def.noNav){
+    const pv=h('button',{type:'button'},'← '+t.ui.prev),nx=h('button',{type:'button'},t.ui.next+' →');
+    pv.onclick=()=>select(vk,ids[(idx<=0?ids.length:idx)-1]);
+    nx.onclick=()=>select(vk,ids[(idx+1)%ids.length]);
+    nav.append(pv,nx)}
+  const lk=(L[vk]&&(L[vk][st.sel]||L[vk]._))||null;
+  if(lk){const b=h('button',{type:'button'},t.ui[LK[lk]]+' ↗');b.onclick=()=>setView(lk);nav.appendChild(b)}
+  if(nav.childNodes.length)p.appendChild(nav);
+  if(ids.length&&!def.noProg){
+    const pr=h('div',{class:'prog'});
+    ids.forEach(id=>{const s=h('span',{title:IT(id).n});if(st.vis.has(id))s.className='v';if(id===st.sel)s.className+=' c';s.onclick=()=>select(vk,id);pr.appendChild(s)});
+    p.appendChild(pr);
+    p.appendChild(h('div',{class:'pcap'},t.ui.explored+' '+ids.filter(i=>st.vis.has(i)).length+'/'+ids.length))}
+}
+function select(k,id,opts){opts=opts||{};const st=S[k],def=V[k];st.sel=id;st.vis.add(id);
+  def.svg.querySelectorAll('.sel').forEach(n=>n.classList.remove('sel'));
+  def.svg.querySelectorAll('[data-id="'+id+'"]').forEach(n=>n.classList.add('sel'));
+  if(def.onSelect)def.onSelect(id);
+  if(k===view){renderPanel();if(!opts.nofly&&def.focus){const b=def.focus(id);if(b){def.svg.classList.add('zoomed');def.cam.go(b)}}}}
+function clearSel(k){const st=S[k],def=V[k];st.sel=null;def.svg.querySelectorAll('.sel').forEach(n=>n.classList.remove('sel'));
+  if(def.onClear)def.onClear();def.svg.classList.remove('zoomed');if(k===view){renderPanel();def.cam.home()}}
+
+/* ---------- interacción (delegada) ---------- */
+views.addEventListener('click',e=>{
+  const n=e.target.closest('[data-id]');const vk=e.target.closest('.view')?.dataset.v;if(!vk||vk!==view)return;
+  if(n&&n.dataset.id&&V[vk].ids.includes(n.dataset.id)){select(vk,n.dataset.id)}
+  else if(!e.target.closest('button')&&S[vk].sel&&V[vk].clearable!==false){clearSel(vk)}});
+views.addEventListener('keydown',e=>{if(e.key!=='Enter'&&e.key!==' ')return;const n=e.target.closest('[data-id]');
+  if(!n)return;e.preventDefault();const vk=e.target.closest('.view').dataset.v;select(vk,n.dataset.id)});
+const tip=$('#tip'),stage=$('#stage');
+views.addEventListener('pointermove',e=>{const n=e.target.closest('[data-id]');
+  if(!n||e.pointerType==='touch'||!V[view].ids.includes(n.dataset.id)){tip.hidden=true;return}
+  const r=stage.getBoundingClientRect();tip.textContent=IT(n.dataset.id).n;tip.hidden=false;
+  tip.style.left=Math.min(r.width-tip.offsetWidth-6,e.clientX-r.left+14)+'px';tip.style.top=Math.max(4,e.clientY-r.top-30)+'px'});
+views.addEventListener('pointerleave',()=>{tip.hidden=true});
+
+/* ---------- pestañas, leyenda, herramientas ---------- */
+const TABS=['body','brain','neuron','syn','reflex','quiz'];
+function renderTabs(){const nav=$('#tabs');nav.innerHTML='';
+  TABS.forEach(k=>{const b=h('button',{type:'button',class:'tab',role:'tab','data-k':k},T().ui.tabs[k]);
+    b.setAttribute('aria-selected',k===view);b.onclick=()=>setView(k);nav.appendChild(b)})}
+function renderLegend(){const lg=$('#legend'),t=T().ui;
+  if(view==='body'||view==='reflex'){lg.hidden=false;
+    lg.innerHTML=`<span><i style="background:var(--motor)"></i>${t.motor}</span><span><i style="background:var(--sens)"></i>${t.sens}</span>`}
+  else lg.hidden=true}
+function renderTools(){const box=$('#tools');box.innerHTML='';const t=T().ui;
+  const add=(txt,fn,pressed)=>{const b=h('button',{type:'button'},txt);if(pressed!==undefined)b.setAttribute('aria-pressed',pressed);
+    b.onclick=()=>fn(b);box.appendChild(b);return b};
+  if(V[view]&&V[view].tools)V[view].tools(add,t);
+  if(V[view]&&V[view].cam&&!V[view].noReset)add(t.reset,()=>{S[view].sel=null;V[view].svg.querySelectorAll('.sel').forEach(n=>n.classList.remove('sel'));if(V[view].onClear)V[view].onClear();V[view].svg.classList.remove('zoomed');renderPanel();V[view].cam.home()})}
+function setView(k){if(!V[k]&&k!=='quiz')k='body';const prev=view;view=k;
+  $$('.tab').forEach(b=>b.setAttribute('aria-selected',b.dataset.k===k));
+  const q=k==='quiz';$('#main').hidden=q;$('#quiz').hidden=!q;
+  if(prev!==k&&V[prev]&&V[prev].hide)V[prev].hide();
+  if(q){renderQuiz()}
+  else{$$('.view').forEach(v=>v.classList.toggle('on',v.dataset.v===k));
+    renderLegend();renderTools();renderPanel();
+    requestAnimationFrame(()=>{V[k].cam.refit();if(V[k].show)V[k].show()})}
+  try{history.replaceState(null,'','#'+k)}catch(e){}}
+function setLang(l){if(!I18N[l])return;LANG=l;try{localStorage.setItem('sn-lang',l)}catch(e){}
+  document.documentElement.lang=l;$('#lang').value=l;$('#ttl').textContent=T().ui.ttl;$('#lbl-lang').textContent=T().ui.lang;
+  renderTabs();Object.keys(V).forEach(k=>{if(V[k].relabel)V[k].relabel()});
+  if(view==='quiz')renderQuiz();else{renderLegend();renderTools();renderPanel()}}
+window.addEventListener('resize',()=>{const d=V[view];if(d&&d.cam)d.cam.refit()});
+
+/* ---------- ayudas de dibujo compartidas ---------- */
+function mkClip(svg,id,d){let defs=svg.querySelector('defs');if(!defs)defs=el('defs',{},svg);const c=el('clipPath',{id},defs);el('path',{d},c);return c}
+function sulci(parent,clipId,box,n,seed,o){o=o||{};const r=rng(seed),b=box;
+  const g=el('g',{'clip-path':'url(#'+clipId+')',fill:'none',stroke:o.stroke||'rgba(72,26,30,.42)','stroke-width':o.sw||1.4,'stroke-linecap':'round'},parent);
+  for(let i=0;i<n;i++){let px=b[0]+r()*b[2],py=b[1]+r()*b[3],a=r()*6.28;const pts=[[px,py]],m=4+Math.floor(r()*4);
+    for(let j=0;j<m;j++){a+=(r()-.5)*2.3;const L=(o.len||16)*(.6+r()*.8);px+=Math.cos(a)*L;py+=Math.sin(a)*L;pts.push([px,py])}
+    el('path',{d:smooth(pts)},g)}
+  return g}
+
+(function(){
+const svg=el('svg',{viewBox:'0 0 880 900','aria-label':'Sistema nervioso'});
+const IDS=['encefalo','ojos','craneales','vago','medula','raquideos','ganglios','simpatica','intercostales','braquial','radial','mediano','cubital','lumbosacro','femoral','ciatico','piel','musculo'];
+const def={svg,ids:IDS};
+const root=registerView('body',def);root.appendChild(svg);
+const sides=(parent,fn)=>{const R=el('g',{class:'R'},parent),Lf=el('g',{class:'Lf',transform:'translate(480,0) scale(-1,1)'},parent);fn(R,false);fn(Lf,true);return[R,Lf]};
+const hs=(p,id,foc)=>{const g=el('g',{class:'hs','data-id':id,role:'button','aria-label':IT(id).n},p);if(foc)g.setAttribute('tabindex','0');return g};
+const nv=(g,d,w,k)=>{el('path',{d,class:'hit'},g);const p=el('path',{d,class:'nv','stroke-width':w},g);if(k)p.setAttribute('data-k',k);return p};
+
+/* sombra y silueta */
+el('ellipse',{cx:240,cy:888,rx:120,ry:8,fill:'#000',opacity:.28,filter:'url(#shadow)'},svg);
+const bodyG=el('g',{style:'filter:drop-shadow(0 0 1.3px var(--bone-line))'},svg);
+sides(bodyG,g=>{
+  el('path',{d:'M240,100 L251,100 C252,122 254,134 262,142 C285,148 312,150 328,160 C316,172 312,184 310,196 C309,230 305,280 300,330 C301,360 307,385 309,412 C313,470 309,540 303,600 C301,640 299,700 295,760 C293,800 293,830 297,850 C301,862 307,872 305,882 L268,886 C260,880 259,860 259,846 C257,800 255,700 253,640 C251,590 247,520 243,468 L240,440 Z',fill:'url(#gBody)'},g);
+  el('path',{d:'M326,156 C342,160 352,182 354,212 C357,250 359,278 362,300 C366,332 372,372 376,410 C378,426 384,442 388,460 L382,468 C376,470 368,462 364,452 C360,440 356,426 353,414 C346,380 338,345 332,312 C326,288 323,262 321,236 C319,214 317,198 312,186 C316,174 320,164 326,156 Z',fill:'url(#gBody)'},g);
+  [['M370,440 L372,466'],['M377,438 L380,464'],['M382,436 L384,458']].forEach(a=>el('path',{d:a[0],stroke:'var(--skin2)','stroke-width':.9,fill:'none',opacity:.8},g))});
+el('path',{d:'M240,24 C262,24 274,44 274,68 C274,88 262,108 248,112 L232,112 C218,108 206,88 206,68 C206,44 218,24 240,24 Z',fill:'url(#gBody)',opacity:.72,style:'filter:drop-shadow(0 0 1.3px var(--bone-line))'},svg);
+[206,274].forEach(x=>el('ellipse',{cx:x,cy:72,rx:4.5,ry:10,fill:'url(#gBody)',opacity:.8},svg));
+
+/* huesos (tenues) */
+const bones=el('g',{opacity:.5,stroke:'var(--bone)',fill:'none','stroke-linecap':'round'},svg);
+for(let i=0;i<24;i++)el('rect',{x:229,y:118+i*13,width:22,height:9,fill:'var(--bone)',stroke:'var(--bone-line)','stroke-width':.8,rx:2},bones);
+el('rect',{x:237.5,y:166,width:5,height:84,fill:'var(--bone)','stroke-width':0},bones);
+sides(bones,g=>{
+  for(let i=0;i<7;i++){const y=162+i*16;el('path',{d:`M258,${y} C290,${y-4} 306,${y+16} 300,${y+34} C292,${y+50} 262,${y+50} 244,${y+44}`,'stroke-width':3},g)}
+  el('path',{d:'M242,148 C268,140 300,142 324,156','stroke-width':4},g);
+  el('path',{d:'M262,372 C290,372 312,392 310,420 C308,436 290,440 276,436 C268,432 262,418 258,404','stroke-width':3.4},g)});
+/* pulmones (referencia, no clicables) */
+sides(svg,g=>el('path',{d:'M250,160 C272,152 292,170 296,210 C298,240 290,262 270,262 C254,262 248,230 248,200 Z',fill:'var(--musc1)',opacity:.2,'pointer-events':'none'},g));
+
+/* músculos (efector) */
+sides(svg,(g,isL)=>{const m=hs(g,'musculo',!isL);
+  [['M327,192 C342,198 349,228 347,262 C341,270 329,268 326,258 C321,236 321,208 327,192 Z'],['M338,300 C350,310 360,350 364,396 C357,402 350,398 346,388 C340,360 334,330 332,312 Z'],['M264,430 C290,424 304,460 302,520 C300,566 294,598 286,606 C272,604 262,566 258,520 C254,484 254,444 264,430 Z']]
+  .forEach(a=>{el('path',{d:a[0],class:'sh',fill:'url(#gMusc)',stroke:'var(--musc2)','stroke-width':1,opacity:.88},m)});
+  [[330,205,342,250],[334,214,343,246],[341,320,356,380],[346,320,358,370],[268,450,291,590],[276,444,296,580],[284,444,300,560]].forEach(s=>el('path',{d:`M${s[0]},${s[1]} Q${(s[0]+s[2])/2+4},${(s[1]+s[3])/2} ${s[2]},${s[3]}`,stroke:'var(--musc2)','stroke-width':.8,fill:'none',opacity:.55,'pointer-events':'none'},m))});
+
+/* encéfalo (vista frontal) */
+const CER='M240,26 C217,25 208,36 208,46 C208,56 216,62 228,62 L252,62 C264,62 272,56 272,46 C272,36 263,25 240,26 Z';
+mkClip(svg,'cBrainB',CER);
+const brain=hs(svg,'encefalo',true);
+el('path',{d:'M271,52 C277,60 273,70 262,72 L256,62 Z',class:'sh',fill:'var(--lt)'},brain);
+el('path',{d:'M209,52 C203,60 207,70 218,72 L224,62 Z',class:'sh',fill:'var(--lt)'},brain);
+el('path',{d:'M224,60 C226,72 236,76 240,74 C244,76 254,72 256,60 Z',class:'sh',fill:'var(--lc)'},brain);
+el('path',{d:'M236,68 L244,68 L243,102 L237,102 Z',class:'sh',fill:'var(--lb)'},brain);
+el('path',{d:CER,class:'sh',fill:'var(--lf)',filter:'url(#tissue)'},brain);
+sulci(brain,'cBrainB',[206,24,68,40],16,7,{len:9,sw:1});
+el('path',{d:'M240,27 C238,38 242,50 240,62',stroke:'rgba(72,26,30,.7)','stroke-width':1.3,fill:'none','pointer-events':'none'},brain);
+
+/* médula espinal */
+const cord=hs(svg,'medula',true);
+el('path',{d:'M236,100 L244,100 L243.5,358 L240,364 L236.5,358 Z',class:'sh',fill:'url(#gCord)',stroke:'var(--bone-line)','stroke-width':.8},cord);
+[-10,-7,-4,-1.5,1.5,4,7,10].forEach(dx=>el('path',{d:`M240,358 C${240+dx*.6},388 ${240+dx*1.3},410 ${240+dx*1.1},432`,class:'nv','stroke-width':1,style:'stroke:var(--cord)'},cord));
+el('path',{d:'M240,102 L240,360',stroke:'none','data-k':'cord'},cord);
+el('path',{d:'M240,46 L240,102',stroke:'none','data-k':'brn'},cord);
+const CORD=cord.querySelector('[data-k="cord"]'),BRN=cord.querySelector('[data-k="brn"]');
+
+/* nervios por lado */
+const nerveLayer=el('g',{style:'filter:drop-shadow(0 .6px .7px rgba(0,0,0,.45))'},svg);
+const SIDES=sides(nerveLayer,(g,isL)=>{
+  const f=!isL;
+  let n=hs(g,'ojos',f);el('ellipse',{cx:254,cy:76,rx:8.5,ry:5.2,class:'sh',fill:'#e9e5da',stroke:'var(--bone-line)','stroke-width':.8},n);
+  el('circle',{cx:254,cy:76,r:3.4,fill:'#4d6f8c','pointer-events':'none'},n);el('circle',{cx:254,cy:76,r:1.5,fill:'#10161b','pointer-events':'none'},n);
+  nv(n,'M250,75 C248,72 245,69 242,66',1.7,'opt');
+  n=hs(g,'craneales',f);['M242,68 C252,78 262,84 270,90','M242,70 C248,82 254,92 260,98','M242,67 C256,68 268,70 274,72'].forEach(d=>nv(n,d,1.3));
+  n=hs(g,'vago',f);nv(n,'M243,100 C246,114 250,126 255,138 C262,160 276,190 280,225 C281,255 276,290 270,320',1.9,'vag');nv(n,'M278,196 C284,206 284,218 278,226',1.2);nv(n,'M280,240 C288,252 288,266 282,276',1.2);
+  n=hs(g,'raquideos',f);for(let i=0;i<19;i++){const y=122+i*12.5;nv(n,`M243,${y} C249,${y} 252,${y+2} 256,${y+3} L266,${y+7}`,1.1,'rt'+i)}
+  n=hs(g,'ganglios',f);for(let i=0;i<19;i++){const y=122+i*12.5;el('ellipse',{cx:254,cy:y+3,rx:3.6,ry:2.3,class:'sh',fill:'var(--nerve)',stroke:'var(--bone-line)','stroke-width':.5},n);el('ellipse',{cx:254,cy:y+3,rx:6,ry:5,class:'hitf'},n)}
+  n=hs(g,'simpatica',f);nv(n,'M267,112 C269,180 268,260 267,330 C266,380 265,400 264,424',1.6);for(let y=118;y<420;y+=21)el('circle',{cx:267-(y>300?1:0),cy:y,r:2.8,class:'sh',fill:'var(--nerve)',stroke:'var(--bone-line)','stroke-width':.5},n);
+  n=hs(g,'intercostales',f);for(let k=0;k<8;k++){const y=186+k*15;nv(n,`M263,${y+4} C277,${y+2} 288,${y+12} 294,${y+30}`,1.4,'ic'+k)}
+  n=hs(g,'braquial',f);['M258,130 C275,140 295,150 314,170','M258,140 C276,146 296,158 316,176','M258,150 C274,158 294,168 316,182','M258,160 C272,166 292,176 316,186','M270,142 C284,160 300,162 316,172','M268,160 C284,150 300,158 316,168'].forEach((d,i)=>nv(n,d,1.5,'b'+i));
+  n=hs(g,'radial',f);nv(n,'M316,172 C334,188 348,212 352,248 C356,290 362,340 372,392 C376,410 380,430 385,452',2,'rad');nv(n,'M376,420 C382,436 386,448 390,462',1.2);
+  n=hs(g,'mediano',f);nv(n,'M316,176 C328,198 336,234 342,270 C346,320 356,372 364,414 C367,430 370,446 374,464',2,'med');nv(n,'M364,414 C372,428 380,440 384,456',1.2);
+  n=hs(g,'cubital',f);nv(n,'M316,182 C322,210 328,250 334,290 C340,330 348,372 356,414 C358,430 361,444 364,458',2,'cub');nv(n,'M356,414 C354,430 358,444 362,458',1.2);
+  n=hs(g,'lumbosacro',f);['M244,366 C262,372 280,388 290,408','M244,378 C264,384 282,400 294,420','M243,390 C262,396 282,414 294,432','M243,402 C262,406 280,424 292,444','M243,414 C260,418 278,436 290,454'].forEach((d,i)=>nv(n,d,1.6,'lum'+i));
+  n=hs(g,'femoral',f);nv(n,'M290,414 C282,440 274,470 270,500 C266,540 266,580 266,620 C266,650 266,690 268,740 C269,780 270,810 272,840',2.6,'fem');nv(n,'M280,452 C292,470 298,500 296,540',1.4);
+  n=hs(g,'ciatico',f);nv(n,'M286,430 C292,470 294,510 293,560 C292,590 290,610 288,624',3.4,'cia');nv(n,'M288,624 C286,660 284,700 282,760 C281,800 282,830 284,856',2.4,'tib');nv(n,'M288,624 C296,660 296,700 292,740 C290,770 288,800 287,830',2.4,'per');
+  n=hs(g,'piel',f);[[368,462],[373,466],[379,464],[384,459],[363,458],[371,452],[380,451]].forEach(c=>{el('circle',{cx:c[0],cy:c[1],r:2.3,class:'sh',fill:'var(--sens)',stroke:'#fff','stroke-width':.5},n);el('circle',{cx:c[0],cy:c[1],r:7,class:'hitf'},n)});
+  g.pul=el('g',{'pointer-events':'none'},g)});
+const [GR,GL]=SIDES;
+
+/* señales (impulsos) */
+let signals=!REDUCED,jr=[],nextAt=0,last=0;
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+function journey(kind,motor,which){
+  const sd=pick([GR,GL]),q=n=>sd.querySelector('[data-k="'+n+'"]');let spec;
+  const arm=which||pick(['rad','med','cub']),leg=which||pick(['cia','fem']);
+  if(kind==='arm')spec=[{el:BRN,a:0,b:1},{el:CORD,a:0,b:.15},{el:q('b'+Math.floor(Math.random()*6)),a:0,b:1},{el:q(arm),a:0,b:1}];
+  else if(kind==='leg'){spec=[{el:BRN,a:0,b:1},{el:CORD,a:0,b:1},{el:q('lum'+Math.floor(Math.random()*5)),a:0,b:1}];
+    if(leg==='fem')spec.push({el:q('fem'),a:0,b:1});else{spec.push({el:q('cia'),a:0,b:1});spec.push({el:q(pick(['tib','per'])),a:0,b:1})}}
+  else if(kind==='vag')spec=[{el:BRN,a:0,b:1},{el:q('vag'),a:0,b:1}];
+  else if(kind==='ic')spec=[{el:BRN,a:0,b:1},{el:CORD,a:0,b:.2+Math.random()*.2},{el:q('ic'+Math.floor(Math.random()*8)),a:0,b:1}];
+  else if(kind==='eye'){spec=[{el:q('opt'),a:1,b:0}];motor=false}
+  if(!motor)spec=spec.slice().reverse().map(s=>({el:s.el,a:s.b,b:s.a}));
+  const segs=[];let tot=0;spec.forEach(s=>{const L=s.el.getTotalLength(),len=Math.abs(s.b-s.a)*L;segs.push({el:s.el,a:s.a,b:s.b,L,len,st:tot});tot+=len});
+  const col=motor?'var(--motor)':'var(--sens)',g=el('g',{},sd.pul);
+  const halo=el('circle',{r:8,fill:col,opacity:.3,filter:'url(#soft)'},g),head=el('circle',{r:3.3,fill:col},g);
+  const trail=[1,2,3,4].map(i=>el('circle',{r:3.1-i*.55,fill:col,opacity:.6-i*.13},g));
+  jr.push({g,halo,head,trail,segs,tot,s:0})}
+function ptAt(j,s){s=Math.max(0,Math.min(j.tot-.01,s));let sg=j.segs[j.segs.length-1];for(const x of j.segs){if(s<=x.st+x.len){sg=x;break}}
+  const f=sg.a+(sg.b-sg.a)*((s-sg.st)/Math.max(sg.len,.001));return sg.el.getPointAtLength(Math.max(0,Math.min(1,f))*sg.L)}
+tickers.add(t=>{const dt=Math.min(60,t-last||16);last=t;if(view!=='body')return;
+  if(signals&&t>nextAt&&jr.length<5){nextAt=t+700+Math.random()*900;
+    const k=pick(['arm','arm','leg','leg','vag','ic','eye']);journey(k,Math.random()<.55)}
+  for(let i=jr.length-1;i>=0;i--){const j=jr[i];j.s+=dt*.2;
+    if(j.s>j.tot+32){j.g.remove();jr.splice(i,1);continue}
+    const p=ptAt(j,j.s),vis=j.s<=j.tot;
+    j.head.setAttribute('cx',p.x);j.head.setAttribute('cy',p.y);j.halo.setAttribute('cx',p.x);j.halo.setAttribute('cy',p.y);
+    j.head.style.opacity=j.halo.style.opacity=vis?1:0;
+    j.trail.forEach((c,n)=>{const ss=j.s-6*(n+1),q=ptAt(j,ss);c.setAttribute('cx',q.x);c.setAttribute('cy',q.y);c.style.display=(ss<0||ss>j.tot)?'none':''})}});
+
+/* etiquetas de la lámina */
+const LABS=[['encefalo','R',36,262,36],['ojos','R',66,258,77],['craneales','R',96,268,87],['vago','R',150,258,148],['braquial','R',200,292,158],['radial','R',252,350,240],['mediano','R',304,344,300],['cubital','R',356,347,356],['piel','R',410,378,464],['musculo','R',520,301,500],['ciatico','R',580,293,560],
+  ['raquideos','L',160,262,166],['ganglios','L',196,254,188],['intercostales','L',232,288,262],['medula','L',282,240,282],['simpatica','L',332,267,332],['lumbosacro','L',402,290,408],['femoral','L',470,270,500]];
+const labG=el('g',{class:'labels'},svg);
+LABS.forEach(a=>{const id=a[0],R=a[1]==='R',ax=R?a[3]:480-a[3],tx=R?428:52,g=el('g',{class:'lab','data-id':id},labG);
+  el('polyline',{points:`${R?tx-4:tx+4},${a[2]-4} ${R?tx-14:tx+14},${a[2]-4} ${ax},${a[4]}`},g);el('circle',{cx:ax,cy:a[4],r:2.4},g);
+  el('text',{x:tx,y:a[2],'text-anchor':R?'start':'end'},g).textContent=IT(id).n});
+const baseBox=()=>S.body.labels?[-215,0,910,900]:[78,6,324,890];
+S.body.labels=stage.clientWidth>760;
+def.cam=new Cam(svg,baseBox());
+labG.style.display=S.body.labels?'':'none';
+def.focus=id=>{const n=svg.querySelector('.hs[data-id="'+id+'"]');if(!n)return null;
+  if(id==='encefalo')return[170,0,140,130];if(id==='ojos')return[190,20,100,110];
+  const b=boxOf(n,34,id==='medula'?330:190);return b};
+def.onSelect=id=>{const m={radial:['arm','rad'],mediano:['arm','med'],cubital:['arm','cub'],braquial:['arm'],ciatico:['leg','cia'],femoral:['leg','fem'],lumbosacro:['leg'],vago:['vag'],intercostales:['ic'],ojos:['eye'],medula:['leg'],piel:['arm']}[id];
+  if(m){journey(m[0],!(id==='piel'),m[1]);if(id==='piel'||id==='ojos')return;journey(m[0],false,m[1])}};
+def.relabel=()=>{labG.querySelectorAll('.lab').forEach(g=>{g.querySelector('text').textContent=IT(g.dataset.id).n});svg.querySelectorAll('.hs').forEach(n=>n.setAttribute('aria-label',IT(n.dataset.id).n))};
+def.tools=(add,t)=>{const lb=add(t.labels,b=>{S.body.labels=!S.body.labels;b.setAttribute('aria-pressed',S.body.labels);labG.style.display=S.body.labels?'':'none';def.cam.base=baseBox();if(!S.body.sel)def.cam.home()},S.body.labels);
+  add(t.signals,b=>{signals=!signals;b.setAttribute('aria-pressed',signals)},signals)};
+def.show=()=>{labG.style.display=S.body.labels?'':'none'};
+})();
+
+/* ---------- ENCÉFALO (vista lateral) ---------- */
+(function(){
+const st=document.createElement('style');
+st.textContent='.ov{fill:var(--sel);opacity:0;pointer-events:none;transition:opacity .3s}.hs:hover .ov{opacity:.14}.hs.sel .ov{opacity:.3}.hs.sel .lobe{animation:breathe 2.2s ease-in-out infinite}@keyframes breathe{50%{filter:brightness(1.18)}}.bl text{font:500 12.5px var(--f-mono);fill:var(--ink);cursor:pointer}.bl line{stroke:var(--ink2);stroke-width:.7}.bl circle{fill:var(--ink)}.bl.sel text{fill:var(--sel)}.bl.sel line{stroke:var(--sel);stroke-width:1.3}.bl.sel circle{fill:var(--sel)}.bl:hover text{fill:var(--hover)}';
+document.head.appendChild(st);
+const svg=el('svg',{viewBox:'0 0 800 600','aria-label':'Encéfalo'});
+const IDS=['frontal','parietal','temporal','occipital','cerebelo','tronco'];
+const def={svg,ids:IDS};registerView('brain',def).appendChild(svg);
+const OUT='M130,300 C110,230 150,140 250,110 C340,80 480,80 560,130 C630,170 660,250 640,320 C630,350 600,360 570,360 C540,362 520,350 490,355 C440,362 380,360 330,355 C260,352 190,360 150,345 C138,338 132,320 130,300 Z';
+mkClip(svg,'cCer',OUT);
+el('ellipse',{cx:400,cy:560,rx:260,ry:14,fill:'#000',opacity:.22,filter:'url(#shadow)'},svg);
+const hs=(p,id)=>el('g',{class:'hs','data-id':id,role:'button',tabindex:'0','aria-label':id},p);
+
+/* tronco y cerebelo (detrás) */
+let g=hs(svg,'tronco');
+const TR='M388,345 L452,345 C450,385 442,420 450,470 L458,545 C440,556 420,556 404,548 L410,470 C412,430 396,392 388,345 Z';
+el('path',{d:TR,class:'sh lobe',fill:'var(--lb)',filter:'url(#tissue)'},g);el('path',{d:TR,class:'ov'},g);
+['M406,400 C420,404 436,404 446,400','M408,440 C424,446 438,446 448,442'].forEach(d=>el('path',{d,stroke:'rgba(40,20,30,.4)',fill:'none','stroke-width':1.2,'pointer-events':'none'},g));
+g=hs(svg,'cerebelo');
+const CB='M468,352 C520,340 590,348 626,372 C644,396 622,432 572,442 C520,450 482,430 466,400 Z';
+el('path',{d:CB,class:'sh lobe',fill:'var(--lo)',filter:'url(#tissue)'},g);el('path',{d:CB,class:'ov'},g);
+for(let i=0;i<8;i++)el('path',{d:`M${478+i*3},${360+i*10} C${520+i*4},${352+i*10} ${580+i*2},${360+i*9} ${626-i*7},${380+i*8}`,fill:'none',stroke:'rgba(30,40,70,.35)','stroke-width':1.3,'pointer-events':'none'},g);
+
+/* lóbulos */
+const lob=(id,fill,d)=>{const q=hs(svg,id);const c=el('g',{'clip-path':'url(#cCer)'},q);
+  el('path',{d,class:'sh lobe',fill,filter:'url(#tissue)'},c);el('path',{d,class:'ov'},c);return q};
+lob('parietal','var(--lp)','M0,0 L800,0 L800,600 L0,600 Z');
+lob('frontal','var(--lf)','M0,0 L350,0 C346,100 332,200 304,300 L282,306 L130,300 L0,300 Z');
+lob('temporal','var(--lt)','M120,330 L262,306 C330,300 420,298 500,318 L640,420 L100,440 Z');
+lob('occipital','var(--lo)','M524,0 L800,0 L800,500 L520,500 C538,420 548,330 536,200 C532,130 526,60 524,0 Z');
+/* surcos */
+const sg=el('g',{'pointer-events':'none'},svg);
+sulci(sg,'cCer',[120,90,540,280],150,21,{len:20,sw:1.5,stroke:'rgba(60,24,28,.38)'});
+sulci(sg,'cCer',[120,90,540,280],60,5,{len:13,sw:1,stroke:'rgba(255,255,255,.18)'});
+const cc=el('g',{'clip-path':'url(#cCer)','pointer-events':'none',fill:'none','stroke-linecap':'round'},svg);
+el('path',{d:'M350,88 C346,150 330,220 300,304',stroke:'rgba(50,16,20,.8)','stroke-width':3.2},cc);   /* central */
+el('path',{d:'M270,306 C340,296 420,296 500,318',stroke:'rgba(50,16,20,.8)','stroke-width':3.2},cc);   /* lateral */
+el('path',{d:'M526,92 C540,180 540,270 530,360',stroke:'rgba(50,16,20,.7)','stroke-width':2.6},cc);
+el('path',{d:OUT,stroke:'rgba(45,14,18,.7)','stroke-width':1.6,'pointer-events':'none',fill:'none'},svg);
+/* brillo */
+el('path',{d:'M170,170 C220,118 320,96 420,96',stroke:'#fff',opacity:.28,'stroke-width':8,fill:'none','stroke-linecap':'round',filter:'url(#soft)','pointer-events':'none'},svg);
+
+/* etiquetas */
+const L2=[['frontal',230,60,210,150],['parietal',470,40,460,130],['occipital',640,100,600,190],['temporal',250,500,250,330],['cerebelo',650,500,580,420],['tronco',560,560,448,500]];
+const lg=el('g',{},svg);
+L2.forEach(a=>{const q=el('g',{class:'bl','data-id':a[0]},lg);const left=a[1]<400;
+  el('line',{x1:a[1],y1:a[2],x2:a[3],y2:a[4]},q);el('circle',{cx:a[3],cy:a[4],r:2.6},q);
+  el('text',{x:a[1]+(left?-8:8),y:a[2]+4,'text-anchor':left?'end':'start'},q).textContent=IT(a[0]).n});
+def.cam=new Cam(svg,[60,20,700,580]);
+const BX={frontal:[80,40,360,360],parietal:[300,30,300,300],occipital:[430,60,260,330],temporal:[80,230,470,200],cerebelo:[400,290,280,200],tronco:[340,290,170,300]};
+def.focus=id=>BX[id];
+def.relabel=()=>{lg.querySelectorAll('.bl').forEach(q=>q.querySelector('text').textContent=IT(q.dataset.id).n);svg.querySelectorAll('.hs').forEach(n=>n.setAttribute('aria-label',IT(n.dataset.id).n))};
+let run=0;
+def.tools=(add,t)=>{const b=add(t.play,async b=>{if(run){run=0;return}run=1;b.setAttribute('aria-pressed',true);
+  for(const id of ['occipital','temporal','parietal','frontal','cerebelo','tronco']){if(!run||view!=='brain')break;select('brain',id);await sleep(2600)}
+  run=0;b.setAttribute('aria-pressed',false)},false);b.textContent='▶ '+t.play};
+def.hide=()=>{run=0};
+})();
+
+/* animador simple: llama fn(k) con k de 0 a 1 durante ms; se puede cancelar con un token */
+function anim(ms,fn,tok){return new Promise(res=>{const t0=performance.now();
+  (function f(now){if(tok&&tok.stop){res(false);return}const k=Math.min(1,(now-t0)/ms);fn(k);if(k<1)requestAnimationFrame(f);else res(true)})(t0)})}
+
+/* ---------- NEURONA ---------- */
+(function(){
+const svg=el('svg',{viewBox:'0 0 1000 500','aria-label':'Neurona'});
+const IDS=['dendritas','soma','nucleo','axon','mielina','ranvier','terminales'];
+const def={svg,ids:IDS};registerView('neuron',def).appendChild(svg);
+const hs=(p,id)=>el('g',{class:'hs','data-id':id,role:'button',tabindex:'0','aria-label':id},p);
+const r=rng(11);
+el('ellipse',{cx:500,cy:455,rx:420,ry:12,fill:'#000',opacity:.18,filter:'url(#shadow)'},svg);
+
+/* dendritas (ramificadas) */
+const dend=hs(svg,'dendritas'),dpaths=[];
+function branch(x,y,a,len,depth,w){if(depth<0||len<9)return;const x2=x+Math.cos(a)*len,y2=y+Math.sin(a)*len;
+  const cx=(x+x2)/2+(r()-.5)*len*.5,cy=(y+y2)/2+(r()-.5)*len*.5;
+  const p=el('path',{d:`M${x.toFixed(1)},${y.toFixed(1)} Q${cx.toFixed(1)},${cy.toFixed(1)} ${x2.toFixed(1)},${y2.toFixed(1)}`,fill:'none',stroke:'var(--neu)','stroke-width':Math.max(1.2,w),'stroke-linecap':'round'},dend);dpaths.push(p);
+  const n=depth>1?2:(r()<.6?2:1);for(let i=0;i<n;i++)branch(x2,y2,a+(i?.55:-.55)+(r()-.5)*.5,len*(.68+r()*.14),depth-1,w*.72)}
+[[-2.7,60],[-2.2,66],[-1.75,64],[-3.3,62],[-3.75,58],[-1.35,56],[3.9,54]].forEach(a=>{
+  const sx=205+Math.cos(a[0])*52,sy=250+Math.sin(a[0])*50;branch(sx,sy,a[0]+(r()-.5)*.2,a[1],3,7)});
+el('path',{d:'M0,0',class:'hit'},dend);
+const dendHit=el('rect',{x:20,y:60,width:150,height:380,class:'hitf'},dend);dendHit.setAttribute('opacity',0);
+
+/* axón con mielina */
+const AX=hs(svg,'axon');
+el('path',{d:'M250,226 C268,238 280,246 300,248 L810,248 L810,252 L300,252 C280,254 268,262 250,274 Z',fill:'var(--neu)',stroke:'var(--bone-line)','stroke-width':.6},AX);
+el('rect',{x:250,y:236,width:560,height:28,class:'hitf'},AX);
+const ax=el('path',{d:'M258,250 L810,250',stroke:'none'},AX);
+const MY=hs(svg,'mielina'),RV=hs(svg,'ranvier');
+const segs=[[304,390],[404,494],[508,598],[612,702],[716,806]];
+segs.forEach(s=>{el('rect',{x:s[0],y:226,width:s[1]-s[0],height:48,rx:20,class:'sh',fill:'url(#gMyel)',stroke:'var(--bone-line)','stroke-width':1.2},MY);
+  el('path',{d:`M${s[0]+10},234 C${s[0]+30},230 ${s[1]-30},230 ${s[1]-10},234`,stroke:'#fff',opacity:.55,'stroke-width':3,fill:'none','pointer-events':'none','stroke-linecap':'round'},MY)});
+const nodes=[];
+for(let i=0;i<segs.length-1;i++){const x=(segs[i][1]+segs[i+1][0])/2;
+  el('rect',{x:x-10,y:222,width:20,height:56,class:'hitf'},RV);
+  const c=el('circle',{cx:x,cy:250,r:5.5,class:'sh',fill:'var(--fire2)',stroke:'var(--bone-line)','stroke-width':.8},RV);nodes.push({x,c})}
+/* terminales */
+const TE=hs(svg,'terminales');
+[[880,160],[900,222],[900,278],[880,340]].forEach((p,i)=>{
+  const d=`M810,250 C840,250 ${p[0]-40},${p[1]} ${p[0]-12},${p[1]}`;
+  el('path',{d,fill:'none',stroke:'var(--neu)','stroke-width':3.4,'stroke-linecap':'round'},TE);
+  el('circle',{cx:p[0],cy:p[1],r:17,class:'sh',fill:'url(#gSoma)',stroke:'var(--bone-line)','stroke-width':1},TE);
+  for(let k=0;k<4;k++)el('circle',{cx:p[0]-6+k*4,cy:p[1]+(k%2?5:-5),r:2.4,fill:'var(--fire2)','pointer-events':'none'},TE);
+  el('circle',{cx:p[0],cy:p[1],r:24,class:'hitf'},TE)});
+/* soma */
+const SO=hs(svg,'soma');
+const sp='M168,238 C166,206 192,190 218,196 C246,202 262,226 254,254 C250,286 224,306 196,300 C170,296 160,268 168,238 Z';
+el('path',{d:sp,class:'sh',fill:'url(#gSoma)',stroke:'var(--bone-line)','stroke-width':1.4,filter:'url(#tissue)'},SO);
+for(let i=0;i<9;i++)el('circle',{cx:176+r()*70,cy:206+r()*88,r:1.2+r()*1.4,fill:'rgba(60,34,18,.4)','pointer-events':'none'},SO);
+const NU=hs(svg,'nucleo');
+el('circle',{cx:210,cy:248,r:25,class:'sh',fill:'url(#gNuc)',stroke:'rgba(0,0,0,.4)','stroke-width':1},NU);
+el('circle',{cx:215,cy:244,r:8,fill:'rgba(25,10,18,.65)','pointer-events':'none'},NU);
+
+/* etiquetas */
+const L3=[['dendritas',20,80,100,140],['soma',60,400,196,292],['nucleo',270,440,216,262],['axon',470,400,470,252],['mielina',560,110,650,226],['ranvier',330,130,502,244],['terminales',790,440,868,346]];
+const lg=el('g',{},svg);
+L3.forEach(a=>{const q=el('g',{class:'bl','data-id':a[0]},lg);
+  el('line',{x1:a[1],y1:a[2],x2:a[3],y2:a[4]},q);el('circle',{cx:a[3],cy:a[4],r:2.6},q);
+  el('text',{x:a[1],y:a[2]+(a[2]>250?16:-6),'text-anchor':'start'},q).textContent=IT(a[0]).n});
+def.cam=new Cam(svg,[0,50,1000,420]);
+const BX={dendritas:[0,40,270,420],soma:[110,150,200,200],nucleo:[130,170,160,160],axon:[240,160,620,180],mielina:[290,170,330,160],ranvier:[360,190,240,120],terminales:[760,110,240,280]};
+def.focus=id=>BX[id];
+
+/* impulso */
+let tok=null;
+const pulse=el('g',{opacity:0,'pointer-events':'none'},svg);
+el('circle',{r:16,fill:'var(--fire)',opacity:.35,filter:'url(#soft)'},pulse);el('circle',{r:6,fill:'url(#gFlame)'},pulse);
+async function fire(){if(tok)tok.stop=true;const my=tok={stop:false};
+  nodes.forEach(n=>n.c.setAttribute('fill','var(--fire2)'));
+  const dp=dpaths[Math.floor(dpaths.length*.35)];const L=dp.getTotalLength();
+  pulse.setAttribute('opacity',1);
+  let ok=await anim(900,k=>{const p=dp.getPointAtLength(L*(1-k));pulse.setAttribute('transform',`translate(${p.x},${p.y})`)},my);
+  if(!ok)return;
+  ok=await anim(450,k=>pulse.setAttribute('transform',`translate(${dp.getPointAtLength(0).x+(228-dp.getPointAtLength(0).x)*k},${dp.getPointAtLength(0).y+(250-dp.getPointAtLength(0).y)*k})`),my);
+  if(!ok)return;
+  let x0=258;
+  for(let i=0;i<=nodes.length;i++){const x1=i<nodes.length?nodes[i].x:812;
+    ok=await anim(i?150:300,k=>pulse.setAttribute('transform',`translate(${x0+(x1-x0)*k},250)`),my);if(!ok)return;
+    if(i<nodes.length){const c=nodes[i].c;c.setAttribute('fill','var(--fire)');c.setAttribute('r',9);await sleep(90);c.setAttribute('r',5.5);c.setAttribute('fill','var(--fire2)')}
+    x0=x1}
+  pulse.setAttribute('opacity',0);
+  TE.querySelectorAll('circle[r="17"]').forEach(c=>{c.style.filter='brightness(1.6)'});
+  await sleep(450);TE.querySelectorAll('circle[r="17"]').forEach(c=>{c.style.filter=''})}
+def.onSelect=id=>{if(['axon','ranvier','mielina','dendritas'].includes(id))fire()};
+def.tools=(add,t)=>{add('⚡ '+t.fire,()=>fire())};
+def.hide=()=>{if(tok)tok.stop=true;pulse.setAttribute('opacity',0)};
+def.relabel=()=>{lg.querySelectorAll('.bl').forEach(q=>q.querySelector('text').textContent=IT(q.dataset.id).n);svg.querySelectorAll('.hs').forEach(n=>n.setAttribute('aria-label',IT(n.dataset.id).n))};
+})();
+
+/* ---------- SINAPSIS ---------- */
+(function(){
+const svg=el('svg',{viewBox:'0 0 1000 580','aria-label':'Sinapsis'});
+const IDS=['presin','vesiculas','neurotrans','hendidura','receptores','postsin'];
+const def={svg,ids:IDS};registerView('syn',def).appendChild(svg);
+const hs=(p,id)=>el('g',{class:'hs','data-id':id,role:'button',tabindex:'0','aria-label':id},p);
+const r=rng(3);
+/* neurona postsináptica */
+const PO=hs(svg,'postsin');
+el('path',{d:'M150,345 C150,322 170,342 200,342 L800,342 C830,342 850,322 850,345 L850,575 L150,575 Z',class:'sh',fill:'url(#gSoma)',stroke:'var(--bone-line)','stroke-width':1.5,filter:'url(#tissue)'},PO);
+[[300,470],[700,500]].forEach(p=>{el('ellipse',{cx:p[0],cy:p[1],rx:38,ry:16,fill:'var(--nuc)',opacity:.45,'pointer-events':'none'},PO)});
+el('ellipse',{cx:500,cy:490,rx:70,ry:46,fill:'url(#gNuc)',opacity:.7,'pointer-events':'none'},PO);
+/* hendidura */
+const HE=hs(svg,'hendidura');
+el('rect',{x:225,y:292,width:550,height:50,class:'sh',fill:'color-mix(in srgb,var(--hover) 10%,transparent)',stroke:'var(--ink2)','stroke-width':.8,'stroke-dasharray':'3 5'},HE);
+/* terminal presináptico */
+const PR=hs(svg,'presin');
+const bulb='M440,0 L560,0 L560,60 C640,80 750,110 760,190 C768,250 760,282 750,292 L250,292 C240,282 232,250 240,190 C250,110 360,80 440,60 Z';
+el('path',{d:bulb,class:'sh',fill:'url(#gSoma)',stroke:'var(--bone-line)','stroke-width':1.5,filter:'url(#tissue)'},PR);
+[[360,140,-18],[640,150,16]].forEach(m=>{const g=el('g',{transform:`translate(${m[0]},${m[1]}) rotate(${m[2]})`,'pointer-events':'none'},PR);
+  el('ellipse',{rx:42,ry:19,fill:'#c98a5a',stroke:'#7a4a2a','stroke-width':1.4},g);
+  for(let i=-3;i<=3;i++)el('path',{d:`M${i*9},-13 C${i*9+5},-4 ${i*9-5},4 ${i*9},13`,stroke:'#7a4a2a',fill:'none','stroke-width':1.1},g)});
+const hl=el('g',{'pointer-events':'none'},PR);
+/* receptores */
+const RX=[330,420,510,600,690],RC=hs(svg,'receptores'),recs=[];
+RX.forEach(x=>{const g=el('g',{},RC);
+  const l=el('rect',{x:x-15,y:344,width:11,height:26,rx:3,class:'sh',fill:'var(--sens)',stroke:'#0c2a3a','stroke-width':.8},g),rr=el('rect',{x:x+4,y:344,width:11,height:26,rx:3,class:'sh',fill:'var(--sens)',stroke:'#0c2a3a','stroke-width':.8},g);
+  const cup=el('path',{d:`M${x-16},344 C${x-15},330 ${x-8},322 ${x},322 C${x+8},322 ${x+15},330 ${x+16},344 L${x+11},344 C${x+10},336 ${x+6},331 ${x},331 C${x-6},331 ${x-10},336 ${x-11},344 Z`,class:'sh',fill:'var(--sens)',stroke:'#0c2a3a','stroke-width':.8},g);
+  [l,rr].forEach(n=>{n.style.transition='transform .35s'});
+  el('rect',{x:x-20,y:318,width:40,height:56,class:'hitf'},g);recs.push({x,l,r:rr,cup})});
+/* vesículas con neurotransmisores */
+const VE=hs(svg,'vesiculas'),NT=hs(svg,'neurotrans'),ves=[];
+RX.forEach((x,i)=>{const gx=x+(i%2?10:-10),gy=208+(i%2?18:0);const g=el('g',{transform:`translate(${gx},${gy})`},VE);
+  el('circle',{r:24,class:'sh',fill:'color-mix(in srgb,var(--myelin) 60%,transparent)',stroke:'var(--bone-line)','stroke-width':1.5},g);
+  const dots=[];for(let k=0;k<6;k++){const a=k*1.05+i,rr=k?11:0;const d=el('circle',{cx:Math.cos(a)*rr,cy:Math.sin(a)*rr,r:3.3,fill:'var(--fire)',stroke:'#7a3a12','stroke-width':.5},g);d.setAttribute('data-id','neurotrans');d.setAttribute('class','hs');dots.push(d)}
+  ves.push({g,gx,gy,dots})});
+/* calcio */
+const caG=el('g',{'pointer-events':'none'},svg);
+/* etiquetas */
+const L4=[['presin',110,110,244,170],['vesiculas',700,60,640,190],['neurotrans',130,230,300,220],['hendidura',850,300,776,318],['receptores',110,400,314,355],['postsin',20,540,150,520]];
+const lg=el('g',{},svg);
+L4.forEach(a=>{const q=el('g',{class:'bl','data-id':a[0]},lg);const left=a[1]<500;
+  el('line',{x1:a[1],y1:a[2],x2:a[3],y2:a[4]},q);el('circle',{cx:a[3],cy:a[4],r:2.6},q);
+  el('text',{x:left?20:a[1]+8,y:a[2]-6,'text-anchor':'start'},q).textContent=IT(a[0]).n});
+def.cam=new Cam(svg,[0,0,1000,580]);
+const BX={presin:[190,0,620,310],vesiculas:[280,150,440,170],neurotrans:[260,160,480,230],hendidura:[190,240,620,150],receptores:[260,290,480,120],postsin:[100,320,800,260]};
+def.focus=id=>BX[id];
+
+let tok=null,parts=[];
+async function fire(){if(tok)tok.stop=true;const my=tok={stop:false};
+  parts.forEach(p=>p.remove());parts=[];hl.innerHTML='';
+  recs.forEach(rc=>{rc.l.style.transform='';rc.r.style.transform='';rc.cup.setAttribute('fill','var(--sens)')});
+  ves.forEach(v=>{v.g.setAttribute('transform',`translate(${v.gx},${v.gy})`);v.g.style.opacity=1;v.dots.forEach(d=>d.style.opacity=1)});
+  /* 1: llega el impulso */
+  const bar=el('rect',{x:440,y:0,width:120,height:14,rx:7,fill:'var(--fire)',opacity:.9,filter:'url(#soft)'},hl);
+  let ok=await anim(600,k=>{bar.setAttribute('y',k*170)},my);if(!ok)return;
+  const ring=el('ellipse',{cx:500,cy:190,rx:20,ry:10,fill:'none',stroke:'var(--fire)','stroke-width':3,opacity:.7},hl);
+  /* calcio */
+  const ca=[];for(let i=0;i<10;i++){const left=i%2,x=left?252+r()*10:748-r()*10;ca.push({c:el('circle',{r:4.2,fill:'var(--hover)',cx:x,cy:288,opacity:0},caG),x,tx:left?300+r()*120:700-r()*120,ty:240+r()*30})}
+  ok=await anim(700,k=>{bar.setAttribute('opacity',.9*(1-k));ring.setAttribute('rx',20+k*160);ring.setAttribute('ry',10+k*70);ring.setAttribute('opacity',.7*(1-k));
+    ca.forEach(c=>{c.c.setAttribute('opacity',Math.min(1,k*3));c.c.setAttribute('cx',c.x+(c.tx-c.x)*k);c.c.setAttribute('cy',288+(c.ty-288)*k)})},my);if(!ok)return;
+  hl.innerHTML='';
+  /* 2: vesículas a la membrana */
+  ok=await anim(800,k=>{const e=ease(k);ves.forEach(v=>v.g.setAttribute('transform',`translate(${v.gx},${v.gy+(268-v.gy)*e})`));ca.forEach(c=>c.c.setAttribute('opacity',1-k))},my);if(!ok)return;
+  ca.forEach(c=>c.c.setAttribute('opacity',0));
+  /* 3: exocitosis: liberan neurotransmisores */
+  const pp=[];
+  ves.forEach((v,vi)=>{v.dots.forEach((d,di)=>{d.style.opacity=0;
+    const c=el('circle',{r:3.6,fill:'var(--fire)',stroke:'#7a3a12','stroke-width':.5,cx:v.gx+(d.cx.baseVal.value),cy:268+d.cy.baseVal.value},caG);parts.push(c);
+    const rec=recs[(vi+(di%2?1:0)+(di>3?-1:0)+5)%5];const bind=di<2||di===3;
+    pp.push({c,x0:v.gx+d.cx.baseVal.value,y0:268+d.cy.baseVal.value,tx:bind?rec.x+(di%2?-4:4)*.5:rec.x+(r()-.5)*160,ty:bind?326:360+r()*20,delay:r()*500,dur:900+r()*400,bind,rec})})});
+  let t0=performance.now();const bound=new Set();
+  ok=await anim(1700,()=>{const el_=performance.now()-t0;
+    pp.forEach(p=>{const k=Math.max(0,Math.min(1,(el_-p.delay)/p.dur));if(k<=0)return;const e=1-Math.pow(1-k,2);
+      p.c.setAttribute('cx',p.x0+(p.tx-p.x0)*e+Math.sin(k*9+p.x0)*5*(1-k));p.c.setAttribute('cy',p.y0+(p.ty-p.y0)*e);
+      if(!p.bind&&k>.85)p.c.setAttribute('opacity',(1-k)*6);
+      if(p.bind&&k>=1&&!bound.has(p.rec)){bound.add(p.rec);p.rec.l.style.transform='translateX(-6px)';p.rec.r.style.transform='translateX(6px)';p.rec.cup.setAttribute('fill','var(--fire)')}})},my);if(!ok)return;
+  /* 4: entran iones */
+  const ions=[];bound.forEach(rc=>{for(let i=0;i<3;i++)ions.push({c:el('circle',{r:3.6,fill:'var(--hover)',stroke:'#fff','stroke-width':.5,cx:rc.x,cy:340,opacity:0},caG),x:rc.x,d:i*180})});
+  ions.forEach(i=>parts.push(i.c));
+  t0=performance.now();
+  ok=await anim(1500,()=>{const e=performance.now()-t0;ions.forEach(i=>{const k=Math.max(0,Math.min(1,(e-i.d)/900));i.c.setAttribute('cy',340+k*100);i.c.setAttribute('cx',i.x+Math.sin(k*8)*8);i.c.setAttribute('opacity',k>0?Math.min(1,k*5)*(1-k*.8):0)})},my);if(!ok)return;
+  await sleep(500);
+  /* reinicio */
+  parts.forEach(p=>p.remove());parts=[];
+  ves.forEach(v=>{v.g.setAttribute('transform',`translate(${v.gx},${v.gy})`);v.dots.forEach(d=>d.style.opacity=1)});
+  recs.forEach(rc=>{rc.l.style.transform='';rc.r.style.transform='';rc.cup.setAttribute('fill','var(--sens)')})}
+def.onSelect=id=>{if(['neurotrans','hendidura','receptores'].includes(id))fire()};
+def.tools=(add,t)=>{add('⚡ '+t.fire,()=>fire())};
+def.hide=()=>{if(tok)tok.stop=true};
+def.relabel=()=>{lg.querySelectorAll('.bl').forEach(q=>q.querySelector('text').textContent=IT(q.dataset.id).n);svg.querySelectorAll('.hs').forEach(n=>n.setAttribute('aria-label',IT(n.dataset.id).n))};
+})();
+
+/* ---------- REFLEJO ---------- */
+(function(){
+const svg=el('svg',{viewBox:'0 0 1000 560','aria-label':'Reflejo'});
+const IDS=['estimulo','receptor','sensitiva','interneurona','motora','efector','cerebro'];
+const def={svg,ids:IDS};registerView('reflex',def).appendChild(svg);
+const hs=(p,id)=>el('g',{class:'hs','data-id':id,role:'button',tabindex:'0','aria-label':id},p);
+const nvp=(g,d,w,col)=>{el('path',{d,class:'hit'},g);return el('path',{d,fill:'none',stroke:col||'var(--nerve)','stroke-width':w,'stroke-linecap':'round','stroke-linejoin':'round',class:'nvp'},g)};
+const st=document.createElement('style');
+st.textContent='.hs.sel .nvp{stroke:var(--sel)}.hs:hover .nvp{stroke:var(--nerve-hi)}.hs.sel .nvp{stroke:var(--sel)!important}';
+document.head.appendChild(st);
+
+/* sección de la médula */
+el('circle',{cx:660,cy:320,r:172,fill:'var(--cord)',stroke:'var(--bone-line)','stroke-width':2,opacity:.95},svg);
+el('circle',{cx:660,cy:320,r:150,fill:'none',stroke:'var(--bone-line)','stroke-width':.6,'stroke-dasharray':'2 6','pointer-events':'none'},svg);
+const gm=el('g',{stroke:'color-mix(in srgb,var(--ink2) 45%,var(--cord))',fill:'none','stroke-linecap':'round'},svg);
+[[660,320,606,212],[660,320,714,212],[660,320,586,426],[660,320,734,426]].forEach(a=>el('path',{d:`M${a[0]},${a[1]} L${a[2]},${a[3]}`,'stroke-width':38},gm));
+el('circle',{cx:660,cy:320,r:40,fill:'color-mix(in srgb,var(--ink2) 45%,var(--cord))'},svg);
+el('circle',{cx:660,cy:320,r:5,fill:'var(--stage)'},svg);
+el('text',{x:660,y:508,'text-anchor':'middle',class:'svgtxt'},svg).textContent='';
+const secT=el('text',{x:858,y:322,class:'svgtxt'},svg);
+
+/* brazo + mano (segmento A del nervio sensitivo dentro) */
+const arm=el('g',{style:'transform-origin:420px 215px;transition:transform .5s cubic-bezier(.3,1.5,.5,1)'},svg);
+el('path',{d:'M170,250 L430,214',stroke:'var(--skin2)','stroke-width':44,'stroke-linecap':'round',opacity:.5,transform:'translate(2,4)'},arm);
+el('path',{d:'M170,250 L430,214',stroke:'var(--skin1)','stroke-width':40,'stroke-linecap':'round'},arm);
+el('path',{d:'M150,254 L196,247',stroke:'var(--skin1)','stroke-width':15,'stroke-linecap':'round'},arm);
+el('path',{d:'M165,240 L205,236',stroke:'#fff',opacity:.18,'stroke-width':5,'stroke-linecap':'round'},arm);
+const SA=hs(arm,'sensitiva');nvp(SA,'M154,254 L430,214',2.2);
+/* receptores en la yema */
+const RE=hs(arm,'receptor');
+[[146,252],[150,258],[152,248],[158,255]].forEach(p=>{el('circle',{cx:p[0],cy:p[1],r:2.6,class:'sh',fill:'var(--sens)',stroke:'#fff','stroke-width':.6},RE);el('circle',{cx:p[0],cy:p[1],r:9,class:'hitf'},RE)});
+
+/* estímulo: llama sobre vela */
+const ES=hs(svg,'estimulo');
+el('rect',{x:84,y:290,width:44,height:92,rx:4,class:'sh',fill:'var(--bone)',stroke:'var(--bone-line)','stroke-width':1.2},ES);
+el('rect',{x:70,y:380,width:72,height:12,rx:3,fill:'var(--bone-line)'},ES);
+el('path',{d:'M106,290 L106,282',stroke:'var(--ink)','stroke-width':2},ES);
+const fl=el('g',{style:'transform-origin:106px 284px'},ES);
+el('path',{d:'M106,206 C124,236 138,250 134,270 C130,284 118,290 106,290 C94,290 80,284 80,270 C78,250 98,240 106,206 Z',fill:'url(#gFlame)',opacity:.95},fl);
+el('path',{d:'M106,246 C114,260 120,268 116,278 C113,284 109,286 106,286 C102,286 98,284 96,278 C94,268 102,262 106,246 Z',fill:'#fff6c8'},fl);
+el('rect',{x:70,y:200,width:80,height:92,class:'hitf'},ES);
+let flick=0;tickers.add(t=>{if(view!=='reflex')return;flick=t;const s=1+Math.sin(t/90)*.04+Math.sin(t/37)*.03;fl.style.transform=`scale(${(1/s).toFixed(3)},${s.toFixed(3)})`});
+
+/* ganglio + raíz dorsal (segmento B) */
+const SB=hs(svg,'sensitiva');
+const SBp=nvp(SB,'M430,214 C470,172 500,146 540,142 C572,148 594,176 608,208',2.2);
+el('ellipse',{cx:522,cy:146,rx:17,ry:11,class:'sh',fill:'var(--nerve)',stroke:'var(--bone-line)','stroke-width':.8,'pointer-events':'none'},SB);
+const SAp=SA.querySelector('.nvp');
+
+/* interneurona */
+const IN=hs(svg,'interneurona');
+const INp=nvp(IN,'M608,210 C604,240 606,262 606,276 C602,320 598,360 592,398',3);
+el('circle',{cx:606,cy:270,r:13,class:'sh',fill:'url(#gSoma)',stroke:'var(--bone-line)','stroke-width':.8},IN);
+for(let i=0;i<4;i++){const a=2.6+i*.9;el('path',{d:`M606,270 l${Math.cos(a)*24},${Math.sin(a)*24}`,stroke:'var(--neu)','stroke-width':2,'stroke-linecap':'round','pointer-events':'none'},IN)}
+el('circle',{cx:660,cy:320,r:60,class:'hitf'},IN);
+/* motora */
+const MO=hs(svg,'motora');
+const MOp=nvp(MO,'M592,416 C566,468 520,492 440,486 C360,480 312,462 276,436',3);
+el('circle',{cx:590,cy:418,r:15,class:'sh',fill:'url(#gSoma)',stroke:'var(--bone-line)','stroke-width':.8},MO);
+for(let i=0;i<4;i++){const a=.4+i*.9;el('path',{d:`M590,418 l${Math.cos(a)*26},${Math.sin(a)*26}`,stroke:'var(--neu)','stroke-width':2,'stroke-linecap':'round','pointer-events':'none'},MO)}
+/* efector: músculo */
+const EF=hs(svg,'efector');
+const mus=el('g',{style:'transform-origin:240px 430px;transition:transform .45s cubic-bezier(.3,1.6,.5,1)'},EF);
+el('path',{d:'M146,434 C170,404 232,396 286,424 C300,432 300,442 286,448 C232,472 170,462 146,434 Z',class:'sh',fill:'url(#gMusc)',stroke:'var(--musc2)','stroke-width':1.2},mus);
+for(let i=0;i<6;i++)el('path',{d:`M${160+i*20},${434-8+(i%2)*2} Q${200+i*10},${428-i*2} ${250+i*7},${432}`,fill:'none',stroke:'var(--musc2)','stroke-width':.8,opacity:.6,'pointer-events':'none'},mus);
+el('path',{d:'M146,434 L112,438 M296,436 L330,430',stroke:'var(--bone)','stroke-width':5,'stroke-linecap':'round'},EF);
+el('rect',{x:110,y:396,width:224,height:78,class:'hitf'},EF);
+/* cerebro y vía ascendente */
+const CE=hs(svg,'cerebro');
+const CEp=nvp(CE,'M636,196 C650,140 700,96 790,80',2.6,'var(--sens)');
+el('path',{d:'M788,66 C790,38 826,24 864,28 C906,32 934,58 928,92 C922,120 890,132 856,128 C820,126 792,108 788,66 Z',class:'sh',fill:'var(--lf)',stroke:'rgba(60,20,24,.6)','stroke-width':1.2,filter:'url(#tissue)'},CE);
+['M812,56 C830,48 850,60 868,52','M804,84 C830,78 850,92 878,84 C896,80 906,92 916,86','M830,110 C850,102 880,112 904,104'].forEach(d=>el('path',{d,fill:'none',stroke:'rgba(60,20,24,.5)','stroke-width':1.4,'pointer-events':'none'},CE));
+const dolor=el('text',{x:858,y:156,'text-anchor':'middle',style:'font:700 24px var(--f-head);fill:var(--motor)',opacity:0},CE);
+dolor.textContent='¡AU!';
+/* marcadores de dorsal/ventral */
+const tags=[];const tg=(x,y,k)=>{const t=el('text',{x,y,class:'svgtxt','text-anchor':'middle'},svg);tags.push([t,k]);return t};
+tg(660,142,'dor');tg(660,505,'ven');
+const TX={es:{dor:'DORSAL',ven:'VENTRAL',sec:'médula (corte)'},en:{dor:'DORSAL',ven:'VENTRAL',sec:'cord (section)'},pt:{dor:'DORSAL',ven:'VENTRAL',sec:'medula (corte)'}};
+const AU={es:'¡AU!',en:'OUCH!',pt:'AI!'};
+function lab(){tags.forEach(a=>a[0].textContent=TX[LANG][a[1]]);secT.textContent=TX[LANG].sec;dolor.textContent=AU[LANG]}
+def.relabel=()=>{lab();svg.querySelectorAll('.hs').forEach(n=>n.setAttribute('aria-label',IT(n.dataset.id).n))};lab();
+def.cam=new Cam(svg,[20,0,960,560]);
+const BX={estimulo:[20,170,260,240],receptor:[60,190,200,120],sensitiva:[110,90,520,200],interneurona:[470,130,380,360],motora:[200,360,460,170],efector:[60,340,320,170],cerebro:[560,0,420,340]};
+def.focus=id=>BX[id];
+
+/* animaciones */
+const pul=el('g',{opacity:0,'pointer-events':'none'},svg);
+const pc=el('circle',{r:7,fill:'var(--motor)'},pul),ph=el('circle',{r:16,fill:'var(--motor)',opacity:.3,filter:'url(#soft)'},pul);
+async function run(path,col,ms,tk){pc.setAttribute('fill',col);ph.setAttribute('fill',col);pul.setAttribute('opacity',1);const L=path.getTotalLength();
+  const ok=await anim(ms,k=>{const p=path.getPointAtLength(L*k);pul.setAttribute('transform',`translate(${p.x},${p.y})`)},tk);pul.setAttribute('opacity',0);return ok}
+let tok=null;
+function reset(){arm.style.transform='';mus.style.transform='';dolor.setAttribute('opacity',0)}
+async function act(id){if(tok)tok.stop=true;const my=tok={stop:false};
+  if(id!=='efector'&&id!=='cerebro')reset();
+  const S_='var(--sens)',M_='var(--motor)';
+  if(id==='estimulo'){await anim(1200,k=>fl.parentNode.style.filter=`drop-shadow(0 0 ${8+Math.sin(k*9)*6}px #f6b83a)`,my);ES.style.filter=''}
+  else if(id==='receptor'){await run(SAp,S_,1)}
+  else if(id==='sensitiva'){if(await run(SAp,S_,1000,my))await run(SBp,S_,1300,my)}
+  else if(id==='interneurona'){await run(INp,S_,1100,my)}
+  else if(id==='motora'){await run(MOp,M_,1500,my)}
+  else if(id==='efector'){mus.style.transform='scale(.82,1.5)';arm.style.transform='rotate(26deg)'}
+  else if(id==='cerebro'){if(await run(CEp,S_,1500,my)){dolor.setAttribute('opacity',1)}}}
+def.onSelect=id=>{act(id)};
+def.onClear=()=>{if(tok)tok.stop=true;reset();pul.setAttribute('opacity',0)};
+let play=0;
+def.tools=(add,t)=>{const b=add('▶ '+t.play,async b=>{if(play){play=0;return}play=1;b.setAttribute('aria-pressed',true);reset();
+  const dur={estimulo:1500,receptor:1000,sensitiva:2500,interneurona:1700,motora:2100,efector:2000,cerebro:2600};
+  for(const id of IDS){if(!play||view!=='reflex')break;select('reflex',id);await sleep(dur[id])}
+  play=0;b.setAttribute('aria-pressed',false)},false)};
+def.hide=()=>{play=0;if(tok)tok.stop=true;reset()};
+})();
+
+/* ---------- DESAFÍO ---------- */
+let QZ={i:0,pick:null,res:[]};
+function renderQuiz(){const q=$('#quiz'),t=T(),Q=t.quiz;q.innerHTML='';
+  const done=QZ.i>=Q.length,add=(tag,txt,cls)=>{const e=h(tag,cls?{class:cls}:{},txt);q.appendChild(e);return e};
+  add('h2',t.ui.quizT);
+  const bar=h('div',{class:'qbar'});Q.forEach((_,i)=>{const s=h('span');if(QZ.res[i]===true)s.className='ok';else if(QZ.res[i]===false)s.className='no';else if(i===QZ.i)s.className='cur';bar.appendChild(s)});q.appendChild(bar);
+  if(done){const n=QZ.res.filter(Boolean).length;
+    add('div',t.ui.done,'pcap');add('div',n+' / '+Q.length,'qscore');
+    add('p',t.ui.rank[n>=6?2:n>=4?1:0]);
+    const b=h('button',{type:'button'},t.ui.again);b.onclick=()=>{QZ={i:0,pick:null,res:[]};renderQuiz()};q.appendChild(b);return}
+  const it=Q[QZ.i];add('div',t.ui.qOf+' '+(QZ.i+1)+' / '+Q.length,'pcap');add('h3',it.q).style.cssText='font:600 21px/1.3 var(--f-head);margin:6px 0 4px';
+  const box=h('div',{class:'qopts'});
+  it.o.forEach((o,i)=>{const b=h('button',{type:'button'},o);
+    if(QZ.pick!==null){b.disabled=true;b.style.cursor='default';if(i===it.a)b.className='ok';else if(i===QZ.pick)b.className='no'}
+    b.onclick=()=>{if(QZ.pick!==null)return;QZ.pick=i;QZ.res[QZ.i]=(i===it.a);renderQuiz()};box.appendChild(b)});
+  q.appendChild(box);
+  if(QZ.pick!==null){const ok=QZ.pick===it.a;const e=h('div',{class:'qexp'});const b=h('b',{},ok?t.ui.ok:t.ui.no);b.style.display='block';e.append(b,it.e);q.appendChild(e);
+    const nx=h('button',{type:'button'},QZ.i===Q.length-1?t.ui.finish:t.ui.nextQ);nx.onclick=()=>{QZ.i++;QZ.pick=null;renderQuiz()};q.appendChild(nx)}}
+
+/* ---------- arranque ---------- */
+document.documentElement.lang='es';
+renderTabs();
+(function(){let k=(location.hash||'').slice(1);if(!TABS.includes(k))k='body';view=k==='body'?'body':'body';setView(k)})();
+window.addEventListener('hashchange',()=>{const k=(location.hash||'').slice(1);if(TABS.includes(k)&&k!==view)setView(k)});
+</script>
+
+</body></html>
